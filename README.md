@@ -41,3 +41,8 @@ The 2.2 and 2.3 experimental pages were superseded after review found that their
 ## Liquid Glass 2.5
 
 Rebuilt the bubble frame to avoid the parallel/double outline: one CSS 20px rounded border with a soft outer shadow, no inset double highlight, and a GPU refraction mask inset 1px with no shader-drawn edge. The GPU shader only samples/displaces the background inside the rounded bubble. The page retains local image upload and 0.36 refraction / 0.96 thickness defaults. iPhone Safari visual validation remains required.
+
+
+## Experiment reset
+
+The 2.0-derived Liquid Glass experiments (2.2–2.5) have been removed from the published Playground. The original 2.0 UI remains intact as a historical baseline. Future visual experiments should start as a separate direction rather than extending the 2.0 bubble implementation.
