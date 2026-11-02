@@ -49,4 +49,68 @@ function initRenderer(){
   }
 }
 initRenderer();
-function upload(){if(!ok)return;const c=document.createElement('canvas');c.width=canvas.width;c.height=canvas.height;const x=c.getContext('2d'),scale=Math.max(c.width/source.width,c.height/source.height),w=source.width*scale,h=source.height*scale;x.drawImage(source,(c.width-w)/2,(c.height-h)/2,w,h);gl.bindTexture(gl.TEXTURE_2D,texture);gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL,1);gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,gl.RGBA,gl.UNSIGNED_BYTE,c);gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL,0)}function resize(){const r=stage.getBoundingClientRect(),zoom=window.visualViewport?.scale||1;dpr=Math.min(4,(devicePixelRatio||1)*zoom,Math.sqrt(5000000/Math.max(1,r.width*r.height)));canvas.width=Math.max(1,Math.round(r.width*dpr));canvas.height=Math.max(1,Math.round(r.height*dpr));scaleX=canvas.width/Math.max(1,r.width);scaleY=canvas.height/Math.max(1,r.height);if(ok){gl.viewport(0,0,canvas.width,canvas.height);upload();const attrs=gl.getContextAttributes();status.textContent='WebGL · DPR '+dpr.toFixed(2)+' · '+aaMode+' · MSAA '+(attrs&&attrs.antialias?'on':'off')}draw()}function v(id){return Number(document.getElementById(id).value)/100}function draw(){if(!ok)return;cancelAnimationFrame(raf);raf=requestAnimationFrame(()=>{const r=stage.getBoundingClientRect();gl.viewport(0,0,canvas.width,canvas.height);gl.clearColor(0,0,0,0);gl.clear(gl.COLOR_BUFFER_BIT);gl.useProgram(program);gl.bindBuffer(gl.ARRAY_BUFFER,buffer);const p=gl.getAttribLocation(program,'p');gl.enableVertexAttribArray(p);gl.vertexAttribPointer(p,2,gl.FLOAT,false,0,0);gl.activeTexture(gl.TEXTURE0);gl.bindTexture(gl.TEXTURE_2D,texture);gl.uniform1i(gl.getUniformLocation(program,'bg'),0);gl.uniform2f(gl.getUniformLocation(program,'res'),canvas.width,canvas.height);gl.uniform1f(gl.getUniformLocation(program,'borderWidth'),Math.min(scaleX,scaleY));gl.uniform1f(gl.getUniformLocation(program,'power'),v('refract'));gl.uniform1f(gl.getUniformLocation(program,'thick'),v('thickness')*1.5);gl.uniform1f(gl.getUniformLocation(program,'shine'),v('glint'));gl.uniform1f(gl.getUniformLocation(program,'frost'),v('frost'));document.querySelectorAll('[data-glass]').forEach(el=>{const b=el.getBoundingClientRect();gl.uniform4f(gl.getUniformLocation(program,'rect'),(b.left-r.left)*scaleX,(b.top-r.top)*scaleY,b.width*scaleX,b.height*scaleY);gl.uniform1f(gl.getUniformLocation(program,'radius'),Math.max(0,Math.min(25*scaleX,25*scaleY,b.height*scaleY*.5)));gl.drawArrays(gl.TRIANGLE_STRIP,0,4)})})}['refract','thickness','glint','frost'].forEach(id=>document.getElementById(id).addEventListener('input',e=>{const n=Number(e.target.value)/(id==='thickness'?100:100);document.getElementById(id+'Out').textContent=(id==='thickness'?n*1:n).toFixed(2);draw()}));if('ResizeObserver' in window){new ResizeObserver(resize).observe(stage);new ResizeObserver(draw).observe(document.getElementById('messages'))}else addEventListener('resize',resize,{passive:true});addEventListener('scroll',draw,{passive:true});addEventListener('resize',resize);if(window.visualViewport){visualViewport.addEventListener('resize',resize,{passive:true});visualViewport.addEventListener('scroll',draw,{passive:true})}document.getElementById('imageFile').addEventListener('change',e=>{const f=e.target.files&&e.target.files[0];if(!f)return;const url=URL.createObjectURL(f),img=new Image();img.onload=()=>{const previousUrl=activeBackgroundUrl;source=img;activeBackgroundUrl=url;backdrop.style.backgroundImage='url('+url+')';document.getElementById('filename').textContent='当前：'+f.name;e.target.value='';resize();if(previousUrl)URL.revokeObjectURL(previousUrl)};img.onerror=()=>{URL.revokeObjectURL(url);e.target.value='';status.textContent='图片读取失败'};img.src=url});document.addEventListener('visibilitychange',()=>{if(document.hidden)cancelAnimationFrame(raf);else resize()});canvas.addEventListener('webglcontextlost',e=>{e.preventDefault();ok=false;cancelAnimationFrame(raf);stage.classList.add('css-fallback');canvas.style.display='none';status.textContent='WebGL 暂停 · CSS fallback'});canvas.addEventListener('webglcontextrestored',()=>{initRenderer();if(ok)resize()});addEventListener('pagehide',e=>{if(!e.persisted&&activeBackgroundUrl){URL.revokeObjectURL(activeBackgroundUrl);activeBackgroundUrl=null}});if(ok)resize();else canvas.style.display='none'})();</script></body></html>
+function upload(){if(!ok)return;const c=document.createElement('canvas');c.width=canvas.width;c.height=canvas.height;const x=c.getContext('2d'),scale=Math.max(c.width/source.width,c.height/source.height),w=source.width*scale,h=source.height*scale;x.drawImage(source,(c.width-w)/2,(c.height-h)/2,w,h);gl.bindTexture(gl.TEXTURE_2D,texture);gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL,1);gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,gl.RGBA,gl.UNSIGNED_BYTE,c);gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL,0)}function resize(){
+  const r=stage.getBoundingClientRect();
+  const zoom=window.visualViewport?.scale||1;
+  dpr=Math.min(4,(devicePixelRatio||1)*zoom,Math.sqrt(5000000/Math.max(1,r.width*r.height)));
+  canvas.width=Math.max(1,Math.round(r.width*dpr));
+  canvas.height=Math.max(1,Math.round(r.height*dpr));
+  scaleX=canvas.width/Math.max(1,r.width);
+  scaleY=canvas.height/Math.max(1,r.height);
+  if(ok){
+    try{
+      gl.viewport(0,0,canvas.width,canvas.height);
+      upload();
+      const attrs=gl.getContextAttributes();
+      status.textContent='WebGL · DPR '+dpr.toFixed(2)+' · '+aaMode+' · MSAA '+(attrs&&attrs.antialias?'on':'off');
+    }catch(error){
+      console.error(error);
+      ok=false;
+      stage.classList.add('css-fallback');
+      canvas.style.display='none';
+      status.textContent='背景更新失败 · CSS fallback';
+    }
+  }
+  draw();
+}
+function v(id){return Number(document.getElementById(id).value)/100}function draw(){
+  if(!ok)return;
+  cancelAnimationFrame(raf);
+  raf=requestAnimationFrame(()=>{
+    if(!ok)return;
+    try{
+      const r=stage.getBoundingClientRect();
+      gl.viewport(0,0,canvas.width,canvas.height);
+      gl.clearColor(0,0,0,0);
+      gl.clear(gl.COLOR_BUFFER_BIT);
+      gl.useProgram(program);
+      gl.bindBuffer(gl.ARRAY_BUFFER,buffer);
+      const p=gl.getAttribLocation(program,'p');
+      gl.enableVertexAttribArray(p);
+      gl.vertexAttribPointer(p,2,gl.FLOAT,false,0,0);
+      gl.activeTexture(gl.TEXTURE0);
+      gl.bindTexture(gl.TEXTURE_2D,texture);
+      gl.uniform1i(gl.getUniformLocation(program,'bg'),0);
+      gl.uniform2f(gl.getUniformLocation(program,'res'),canvas.width,canvas.height);
+      gl.uniform1f(gl.getUniformLocation(program,'borderWidth'),Math.min(scaleX,scaleY));
+      gl.uniform1f(gl.getUniformLocation(program,'power'),v('refract'));
+      gl.uniform1f(gl.getUniformLocation(program,'thick'),v('thickness')*1.5);
+      gl.uniform1f(gl.getUniformLocation(program,'shine'),v('glint'));
+      gl.uniform1f(gl.getUniformLocation(program,'frost'),v('frost'));
+      document.querySelectorAll('[data-glass]').forEach(el=>{
+        const b=el.getBoundingClientRect();
+        gl.uniform4f(gl.getUniformLocation(program,'rect'),(b.left-r.left)*scaleX,(b.top-r.top)*scaleY,b.width*scaleX,b.height*scaleY);
+        gl.uniform1f(gl.getUniformLocation(program,'radius'),Math.max(0,Math.min(25*scaleX,25*scaleY,b.height*scaleY*.5)));
+        gl.drawArrays(gl.TRIANGLE_STRIP,0,4);
+      });
+    }catch(error){
+      console.error(error);
+      ok=false;
+      cancelAnimationFrame(raf);
+      stage.classList.add('css-fallback');
+      canvas.style.display='none';
+      status.textContent='渲染中断 · CSS fallback';
+    }
+  });
+}
+['refract','thickness','glint','frost'].forEach(id=>document.getElementById(id).addEventListener('input',e=>{const n=Number(e.target.value)/(id==='thickness'?100:100);document.getElementById(id+'Out').textContent=(id==='thickness'?n*1:n).toFixed(2);draw()}));if('ResizeObserver' in window){new ResizeObserver(resize).observe(stage);new ResizeObserver(draw).observe(document.getElementById('messages'))}else addEventListener('resize',resize,{passive:true});addEventListener('scroll',draw,{passive:true});addEventListener('resize',resize);if(window.visualViewport){visualViewport.addEventListener('resize',resize,{passive:true});visualViewport.addEventListener('scroll',draw,{passive:true})}document.getElementById('imageFile').addEventListener('change',e=>{const f=e.target.files&&e.target.files[0];if(!f)return;const url=URL.createObjectURL(f),img=new Image();img.onload=()=>{const previousUrl=activeBackgroundUrl;source=img;activeBackgroundUrl=url;backdrop.style.backgroundImage='url('+url+')';document.getElementById('filename').textContent='当前：'+f.name;e.target.value='';resize();if(previousUrl)URL.revokeObjectURL(previousUrl)};img.onerror=()=>{URL.revokeObjectURL(url);e.target.value='';status.textContent='图片读取失败'};img.src=url});document.addEventListener('visibilitychange',()=>{if(document.hidden)cancelAnimationFrame(raf);else resize()});canvas.addEventListener('webglcontextlost',e=>{e.preventDefault();ok=false;cancelAnimationFrame(raf);stage.classList.add('css-fallback');canvas.style.display='none';status.textContent='WebGL 暂停 · CSS fallback'});canvas.addEventListener('webglcontextrestored',()=>{initRenderer();if(ok)resize()});addEventListener('pagehide',e=>{if(!e.persisted&&activeBackgroundUrl){URL.revokeObjectURL(activeBackgroundUrl);activeBackgroundUrl=null}});if(ok)resize();else canvas.style.display='none'})();</script></body></html>
