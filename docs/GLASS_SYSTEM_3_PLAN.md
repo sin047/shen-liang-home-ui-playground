@@ -48,3 +48,12 @@
 
 ## 已知限制
 当前原型使用用户选择的图片或程序生成的默认背景纹理。正式页面若有复杂 DOM 背景、动态内容或滚动长列表，需要设计可信的背景源同步方案，不能假定可无成本截取任意 DOM。
+
+
+## P0 visual refinement — 3.0.1
+
+- Replaced radial-from-center lens normals with a finite-difference gradient of the rounded-rectangle SDF, so edge optics follow the actual rounded geometry.
+- Reworked edge glint into broad directional key/fill highlights. The `shine` uniform now directly scales a wider edge band, making the control visibly responsive rather than relying on a narrow one-pixel rim.
+- Reduced default frost from 0.08 to 0.03 and reduced CSS white fill/blur to preserve background clarity.
+- Kept CSS as the sole border renderer; Shader continues to render only the interior sampled background and local optical highlights.
+- Static source checks passed. Actual iPhone Safari appearance and frame-rate remain pending user-device validation.
