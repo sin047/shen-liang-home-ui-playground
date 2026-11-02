@@ -123,3 +123,34 @@ User explicitly chose to return the live playground to the exact 3.0.6 implement
 ## User decision — restore 3.0.5 baseline
 
 User clarified that the desired visual baseline is 3.0.5 (not 3.0.6). Restored `docs/glass-system-30.html` byte-for-byte from the 3.0.5 page commit `7f2b5390ddd297de041cb4e34195c46f74343605`. This keeps the 3.0.5 optical thickness/refraction profile and the already accepted 3.0.4 directional glint response, while excluding the later 3.0.6 volumetric body shading and 3.0.7–3.0.9 experiments. The live page should now be treated as 3.0.5. Later commits remain in Git history but are not in the deployed HTML.
+
+
+## Reference review + isolated edge-glint rollback trial — 2026-11-02
+
+### whereyanlands《液态玻璃技术方案 v3》
+
+- Its primary architecture is CSS geometry / WebGL optics / lifecycle synchronization, separated into scene state, background sampling, optics, geometry-mask, and UI layers.
+- Multiple glass elements should sample one shared background coordinate system and share one WebGL context / shader; element rectangles are mapped from DOM geometry. Scroll, resize, theme, and background changes must refresh the source. The optics lifecycle should expose refresh and dispose, and observe target size / visibility.
+- The shader proposal is materially different from the current prototype: rounded-rectangle masking, refraction across the surface, low-frequency interior waves, and localized directional edge glints. Its example edge formula is a narrow hairline near the boundary multiplied by upper-left / lower-right angular lobes; it explicitly avoids a continuous white outline.
+- Its baseline preset is restrained (refract 26, tint 0, blur 0, edge 25, shine 13, wobble 15). These are reference values, not directly interchangeable with this prototype's current slider units.
+
+### 小克Cat《专属前端·玻璃材质代码摘要》
+
+- This is a CSS frosted-glass / theme-token implementation, not a WebGL refraction model. Its useful contribution is the component-scoped token system for fill, border, shadow, blur, and theme-specific variants.
+- The composer puts its glass surface on a separate `::before` layer while keeping actual text input on a separate compositing layer, with `isolation:isolate`. The source documents an iOS cursor-position issue when editable content and `backdrop-filter` share a compositing layer.
+- Its visual recipe uses a translucent gradient, border, outer ring, inset highlight, and `backdrop-filter: blur() saturate()`. This is appropriate for frosted controls and panels, but copying the full ring + inset highlight onto these bubbles would risk recreating the multiple bright outlines the user rejected.
+
+### Audit of the current 3.0.5 prototype
+
+- It already has one WebGL context, one shared stage texture, a rounded SDF mask, DOM-rect mapping for multiple bubbles, a user-selected background, and resize / scroll / visibility refresh hooks.
+- Its current refraction is edge-weighted (`exp(-inside / opticalDepth)`), not the full-surface refraction field described by whereyanlands; there is also no interior-wave term yet.
+- The visible rim has two possible contributors: the CSS 1px `rgba(255,255,255,.70)` border and the Shader's broad bevel highlight. The 3.0.4 change amplified the latter with a tighter specular lobe, a 2x multiplier, and an 0.82 white blend. These should not be conflated.
+- The canvas DPR is capped at 1.5. That is a plausible contributor to rough edges on high-density mobile screens, but it is deliberately left unchanged in this isolated visual trial so edge brightness and antialiasing can be evaluated separately.
+
+### This trial: restore the softer pre-3.0.4 glint response
+
+- Replaced only the amplified 3.0.4 bevel/specular glint curve with the earlier, softer directional edge-band response (`glint * 0.34`, without the added specular lobe or 2x amplification).
+- Preserved the 3.0.5 thickness/refraction profile (`opticalDepth` / `opticalPath`), SDF coverage, CSS border, background sampling, controls, and layout.
+- This is an isolated rollback trial, not a new visual baseline until the user checks it on-device.
+- If a continuous white ring remains, next isolate the CSS border from Shader glint. After that, test the whereyanlands narrow angular hairline formula as a separate change. DPR / antialiasing is another separate follow-up.
+- Do not copy the Xiaokecat outer 1px ring + inset highlight onto the bubbles. Keep its tokenization and content-layer isolation ideas for later component integration.
