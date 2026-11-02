@@ -1,2 +1,25 @@
-# shen-liang-home-ui-playground
-Visual experiments and UI prototypes for 家 ^ ^
+# 家 ^ ^ UI Playground
+
+独立的视觉实验场，与正式产品仓库 `sin047/shen-liang-home` 分离。
+
+## 当前预览：Liquid Glass 2.0
+
+打开 GitHub Pages 部署地址后即可在手机 Safari 中体验。当前原型保留 v1 的页面结构与交互，只叠加 CSS 液态玻璃视觉皮肤；不连接正式后端、认证或聊天数据，也不实现真实光学 Shader 折射。
+
+## 发布设置
+
+在 GitHub 仓库 Settings → Pages：
+- Build and deployment → Deploy from a branch
+- Branch：`main`
+- Folder：`/docs`
+- Save
+
+发布完成后访问：`https://sin047.github.io/shen-liang-home-ui-playground/`
+
+## 文件
+
+- `docs/index.html`：独立预览页面
+- `docs/manifest.webmanifest`：独立 PWA 身份
+- `docs/assets/icons/`：本实验使用的图标副本
+
+正式仓库和冻结 UI 不会被此仓库修改。
