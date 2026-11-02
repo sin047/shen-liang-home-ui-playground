@@ -95,3 +95,8 @@ User device validation confirms all three edge-glint positions are acceptable: m
 ## P0 perceived volume iteration — 3.0.6
 
 User reports geometry and clarity are accepted, but bubbles still visually merge with the background and feel flat. Added restrained interior-only volumetric cues in the Shader: a low-opacity cool body transmission tint that fades inward, a broad key-light face reflection, and a very subtle opposing inner-edge attenuation. These are not additional outlines or CSS shadows. Preserved the accepted edge-glint formula, bevel width, thickness/refraction profile, rounded SDF mask, and CSS-only border. Source checks passed; verify on a bright detailed photo and a dark background before further tuning.
+
+
+## 3.0.7 visual rollback
+
+User device review of 3.0.6: depth became too abrupt/plasticky and the edge appeared rough/thick. Reverted only the 3.0.6 volumetric body tint, broad face reflection and opposing inner shade. Preserved the accepted 3.0.5 thickness/refraction profile, 3.0.4 directional glint, rounded SDF coverage, and single CSS border. Do not reintroduce broad interior whitening/shading as a proxy for depth. Next exploration should focus on subtle optical separation (very low-contrast Fresnel/transmission) and edge antialias/compositing diagnosis, tested separately. Static checks passed; device recheck needed.
