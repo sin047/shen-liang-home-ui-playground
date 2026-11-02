@@ -90,3 +90,8 @@ User device validation confirms all three edge-glint positions are acceptable: m
 - The bevel width is frozen at the 3.0.4 accepted default-equivalent value, preserving the edge-glint profile while thickness is evaluated.
 - Refraction slider, SDF geometry, CSS border, frost and edge-glint curve remain unchanged.
 - Source-level checks passed. User-device evaluation is required before changing the refraction falloff profile.
+
+
+## P0 perceived volume iteration — 3.0.6
+
+User reports geometry and clarity are accepted, but bubbles still visually merge with the background and feel flat. Added restrained interior-only volumetric cues in the Shader: a low-opacity cool body transmission tint that fades inward, a broad key-light face reflection, and a very subtle opposing inner-edge attenuation. These are not additional outlines or CSS shadows. Preserved the accepted edge-glint formula, bevel width, thickness/refraction profile, rounded SDF mask, and CSS-only border. Source checks passed; verify on a bright detailed photo and a dark background before further tuning.
