@@ -118,3 +118,8 @@ User screenshot still showed a strong milky/plastic rim. Clarification: 3.0.7 ha
 ## User decision — restore 3.0.6 baseline
 
 User explicitly chose to return the live playground to the exact 3.0.6 implementation and discard the later visual experiments (3.0.7–3.0.9) from the active preview. The HTML was restored byte-for-byte from the 3.0.6 page commit `74d7ed75f044c6541d7faf86a23bb119e1d51bee`. Later Git commits remain in repository history for audit/recovery; they are no longer part of the deployed page. Do not reintroduce 3.0.7–3.0.9 effects unless the user explicitly asks.
+
+
+## User decision — restore 3.0.5 baseline
+
+User clarified that the desired visual baseline is 3.0.5 (not 3.0.6). Restored `docs/glass-system-30.html` byte-for-byte from the 3.0.5 page commit `7f2b5390ddd297de041cb4e34195c46f74343605`. This keeps the 3.0.5 optical thickness/refraction profile and the already accepted 3.0.4 directional glint response, while excluding the later 3.0.6 volumetric body shading and 3.0.7–3.0.9 experiments. The live page should now be treated as 3.0.5. Later commits remain in Git history but are not in the deployed HTML.
