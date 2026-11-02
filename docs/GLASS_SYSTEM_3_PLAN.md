@@ -71,3 +71,8 @@ Black-background inspection exposed a rounded-mask mismatch: the CSS bubble uses
 - Increased directional contrast between key and fill lighting while keeping a low baseline reflection; the shine control directly scales the bevel response.
 - Kept the center optically clear: the bevel/highlight is edge-local, frost remains at the low default, and CSS remains the only visible border.
 - Source-level checks passed. Device-side appearance and performance still require visual confirmation.
+
+
+## P0 directional highlight response — 3.0.4
+
+User validation: no square halo, corner transition natural, center clear, but the edge-glint slider produced no perceptible change. Increased the response curve rather than changing the geometry: widened the inner bevel band, added a tighter directional specular lobe on the key-light side, amplified the normalized shine input by 2x, and raised the highlight blend. The CSS border, rounded SDF coverage, low frost, and clear center remain unchanged. Static source checks confirm the slider remains wired to the shader uniform and the new response terms are present. Recheck on device at min/mid/max; the intended result is a clearly visible but still directional edge-light change, not a full white outline.
