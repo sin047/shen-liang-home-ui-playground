@@ -29,3 +29,5 @@
 - `docs/lab/liquid-glass-23.html`: one shared WebGL context renders multiple rounded chat-bubble glass regions over a background texture; HTML text remains above the GPU layer.
 - This is an isolated material prototype, not integrated into the 2.0 page or production UI.
 - Test with a custom image on iPhone Safari before considering integration. DOM capture, dynamic app backgrounds, scrolling/keyboard edge cases, context-loss recovery, and performance validation remain open.
+
+- `docs/lab/liquid-glass-231.html`: follow-up to 2.3 with stronger lens displacement, SDF-derived edge normals, reduced white wash, and visible CSS edge fallback.
