@@ -373,3 +373,54 @@ No production integration is authorized by this phase. P2 remains isolated in th
 ### Device validation
 
 This pass is intentionally limited to scheduling/lifecycle behavior. Re-run iPhone Safari checks for orientation, pinch zoom, background replacement, and app foreground recovery before merging. Do not infer frame-rate improvement without profiling on device.
+
+
+
+## P2.2 background texture caching and lifecycle — 2026-11-02
+
+### Audit finding
+
+- P2.1 coalesced resize events, but every resulting `resize()` still created a temporary canvas at the full WebGL backing-store dimensions and called `texImage2D` again.
+- The background image itself had not changed during ordinary resize / orientation / viewport updates, so those uploads were redundant.
+- The upload canvas could temporarily duplicate several megapixels of pixel storage. The selected image also remained decoded in memory, as required for background display and context restoration.
+- Rapidly selecting images could allow an older asynchronous image load to finish after a newer selection and replace it unexpectedly.
+
+### Change
+
+- Upload the selected background as one source texture, capped by the lesser of `MAX_TEXTURE_SIZE` and a 5-megapixel pixel budget.
+- Only create a downscaling canvas when the source exceeds that GPU texture budget. Clear the staging canvas dimensions immediately after `texImage2D` completes so its backing store can be reclaimed.
+- Move the centered `background-size: cover` crop into two Shader uniforms (`bgScale` / `bgOffset`). Refraction displacement is scaled in the same cropped coordinate system and clamped to the visible cover region.
+- Keep the selected source image dimensions and derive cover coordinates from the current stage aspect ratio. Resizing now updates the canvas viewport and geometry only; it does not re-upload the unchanged background texture.
+- Upload only for initial texture creation, a successfully loaded replacement image, or WebGL context restoration.
+- Guard asynchronous image selection with a monotonically increasing request token; stale loads are ignored and their object URLs are revoked.
+- On a non-BFCache page exit, explicitly delete the texture, vertex buffer, and program, release the canvas backing store, cancel pending frames, and revoke the active object URL.
+
+### Preserved
+
+- No changes to the rounded SDF, edge glint, thickness, refraction strength curve, frost contribution, CSS border, message geometry, typography, controls, or layout.
+- The cover crop remains centered and follows the same `cover` aspect-ratio rule as the CSS background. The shader change only maps stage UVs into the source image's visible crop.
+- Still one WebGL context, one shared background texture, and one shared shader for all bubbles.
+- No production repository changes.
+
+### Static validation
+
+- JavaScript syntax parsed successfully.
+- The material shader formulas compare identical to the pre-P2.2 version after normalizing only the new cover-coordinate mapping.
+- Resize no longer calls `texImage2D` when the texture is already valid.
+- Upload call sites are limited to initial creation, background replacement, and context restoration.
+- Texture dimensions are bounded by both the device maximum texture size and the 5-megapixel budget.
+- Staging canvas backing dimensions are cleared after upload.
+- Stale image loads are ignored and their object URLs released.
+- Context-loss state clears invalid WebGL object references; non-BFCache page exit disposes live GL resources.
+- CSS, controls, and DOM message markup are unchanged.
+
+### Device validation
+
+This is a texture ownership / sampling-coordinate change, so verify on iPhone Safari with:
+1. Initial default gradient.
+2. A portrait background and a landscape background (center-cover crop).
+3. Replacing the background several times quickly.
+4. Orientation change and pinch zoom without changing the selected background.
+5. App background / foreground recovery and, if possible, context restoration.
+
+Do not claim a measured frame-rate or memory improvement until profiled on device. No visual material redesign is included in this pass.
