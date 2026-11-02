@@ -334,3 +334,42 @@ Proceed without changing the accepted visual profile. Audit and measure:
 6. Measure frame time and memory on representative mobile conditions before changing defaults.
 
 No production integration is authorized by this phase. P2 remains isolated in the UI Playground; only after evidence-based P2 acceptance should integration into the frozen product UI be discussed.
+
+
+
+## P2 renderer scheduling — first isolated pass — 2026-11-02
+
+### Audit finding
+
+- Scroll-driven `draw()` already coalesces repeated calls into one animation frame.
+- Stage ResizeObserver, window resize, and visualViewport resize called `resize()` directly. On mobile Safari these signals can arrive in bursts or overlap, causing repeated backing-store sizing and full background texture uploads.
+- The window resize listener was registered separately from the ResizeObserver fallback, so the fallback path could register the same resize work twice.
+- Geometry-only scroll redraws do not upload the background texture; texture upload is currently confined to `resize()`.
+
+### Change
+
+- Added a single `scheduleResize()` requestAnimationFrame gate for stage ResizeObserver, window resize, visualViewport resize, background-image completion, and visibility restoration.
+- Removed the duplicate direct window resize registration. The ResizeObserver fallback is now simply the window resize listener routed through the same scheduler.
+- When the document becomes hidden, cancel both pending draw and resize frames; schedule one fresh resize on return.
+- On a non-BFCache page exit, cancel pending frames before releasing the selected background object URL.
+
+### Preserved
+
+- Shader source and all visual/material formulas are byte-for-byte unchanged.
+- No change to DPR cap, backing-store budget, background crop, bubble geometry, CSS, text, or controls.
+- Scroll redraw remains requestAnimationFrame-coalesced.
+- No production repository changes.
+
+### Static validation
+
+- JavaScript syntax parsed successfully.
+- Exactly one WebGL context remains.
+- Stage, window, and visualViewport resize paths use the shared scheduler.
+- Duplicate direct window resize registration is absent.
+- Background replacement and visibility restoration use the scheduler.
+- Pending frames are cancelled on hidden/page-exit lifecycle paths.
+- Shader source comparison against the P1-accepted main snapshot is identical.
+
+### Device validation
+
+This pass is intentionally limited to scheduling/lifecycle behavior. Re-run iPhone Safari checks for orientation, pinch zoom, background replacement, and app foreground recovery before merging. Do not infer frame-rate improvement without profiling on device.
