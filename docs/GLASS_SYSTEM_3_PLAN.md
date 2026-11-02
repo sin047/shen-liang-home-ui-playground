@@ -81,3 +81,12 @@ User validation: no square halo, corner transition natural, center clear, but th
 ## 3.0.4 visual acceptance
 
 User device validation confirms all three edge-glint positions are acceptable: minimum is subdued, midpoint is visibly soft, and maximum is stronger without becoming a continuous white outline. Treat the 3.0.4 edge-glint response as accepted and freeze it during the next iteration. Next P0 focus: refine perceived glass thickness and the spatial falloff of refraction while preserving the accepted rounded geometry, clear center, and edge-glint response. Change one optical variable at a time and request device validation before proceeding.
+
+
+## P0 thickness profile iteration — 3.0.5
+
+- Started thickness-only refinement after 3.0.4 edge-glint acceptance.
+- Thickness now controls the depth of the optical displacement profile (`opticalDepth`) and the displacement path length (`opticalPath`), rather than coupling to the bevel width.
+- The bevel width is frozen at the 3.0.4 accepted default-equivalent value, preserving the edge-glint profile while thickness is evaluated.
+- Refraction slider, SDF geometry, CSS border, frost and edge-glint curve remain unchanged.
+- Source-level checks passed. User-device evaluation is required before changing the refraction falloff profile.
