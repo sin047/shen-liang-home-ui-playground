@@ -23,3 +23,9 @@
 - `docs/assets/icons/`：本实验使用的图标副本
 
 正式仓库和冻结 UI 不会被此仓库修改。
+
+## GPU experiment: Liquid Glass 2.3
+
+- `docs/lab/liquid-glass-23.html`: one shared WebGL context renders multiple rounded chat-bubble glass regions over a background texture; HTML text remains above the GPU layer.
+- This is an isolated material prototype, not integrated into the 2.0 page or production UI.
+- Test with a custom image on iPhone Safari before considering integration. DOM capture, dynamic app backgrounds, scrolling/keyboard edge cases, context-loss recovery, and performance validation remain open.
