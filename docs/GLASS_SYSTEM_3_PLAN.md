@@ -108,3 +108,8 @@ User device review of 3.0.6: depth became too abrupt/plasticky and the edge appe
 - Kept the tint deliberately restrained (2.8% maximum blend toward a cool neutral), with no broad face whitening, extra outline, CSS shadow, or additional border.
 - Preserved accepted 3.0.4 glint curve, 3.0.5 thickness/refraction profile, SDF geometry and CSS-only border.
 - Source checks passed. Device-side review on bright floral and dark/high-contrast backgrounds is required; do not increase the tint unless it remains invisible in both.
+
+
+## 3.0.9 optical whitening cleanup
+
+User screenshot still showed a strong milky/plastic rim. Clarification: 3.0.7 had removed the three 3.0.6 volume cues, but 3.0.8 then added a new Fresnel tint, and the earlier frost-fill control remained active. Removed the residual Fresnel tint and frost-fill shader contribution and removed the now-misleading frost slider/control/binding. The only remaining white shader mix is the previously accepted directional edge-glint. Preserved thickness/refraction, rounded SDF geometry and CSS-only 1px border. Static checks passed; verify on device. If the rim remains rough, next isolate edge-glint versus CSS border rather than adding more shading.
