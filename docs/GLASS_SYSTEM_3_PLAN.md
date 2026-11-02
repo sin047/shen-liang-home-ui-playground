@@ -57,3 +57,8 @@
 - Reduced default frost from 0.08 to 0.03 and reduced CSS white fill/blur to preserve background clarity.
 - Kept CSS as the sole border renderer; Shader continues to render only the interior sampled background and local optical highlights.
 - Static source checks passed. Actual iPhone Safari appearance and frame-rate remain pending user-device validation.
+
+
+## P0 geometry/compositing correction — 3.0.2
+
+Black-background inspection exposed a rounded-mask mismatch: the CSS bubble uses a 25px radius (browser-clamped to half the element height), while the Shader radius was independently clamped to 38% of the height. This let the GPU interior mask become more rectangular than the CSS shell near corners. The Shader now uses the same CSS-derived radius, inset by the 1px CSS border, and the half-size uses the same 1px inset. Removed the bubble drop/inset shadow and backdrop-filter from this optical test surface so they cannot create a second halo or blur layer. CSS remains the only visible border. Source-level checks passed; visual verification on the user's device is still required.
