@@ -223,3 +223,34 @@ User supplied a close-up screenshot after the DPR 3.0 trial. The curved perimete
 ### Validation
 
 Static checks passed for viewport-scale tracking, exact X/Y geometry mapping, derivative coverage, and preserved optical parameters. Runtime values and visual output must still be checked on the user's iPhone Safari; the status line now exposes DPR / AA / MSAA for that purpose.
+
+
+## P0 unified perimeter compositing — 2026-11-02
+
+User's latest device screenshot shows the lower gray/optical contour is now smooth, but a brighter white contour above it remains stepped and does not fully coincide with the gray edge.
+
+### Confirmed layer relationship in the current DOM
+
+- The WebGL canvas is a lower stacking layer (`z-index: 0`).
+- Each message element is above it (`z-index: 1`) and paints its own semi-transparent white CSS border.
+- The Shader and CSS border therefore rasterize the same rounded perimeter independently, in different compositing layers. The canvas now responds to visual viewport zoom, but the CSS border is still separately rasterized/composited by Safari. This explains why the gray Shader contour can look smoother while the brighter white CSS contour remains stepped or offset.
+- The CSS border's 70% white alpha also lets the underlying optical gray show through. This is not a missing-pixel bug in the Shader mask; it is a two-layer edge/compositing mismatch.
+
+### Isolated correction
+
+- Removed the visible CSS border paint while retaining a transparent 1px CSS border so DOM layout and text insets remain unchanged.
+- Moved that same 1 CSS px / 70%-white border treatment into the shared WebGL Shader, using the exact same outer rounded-rectangle SDF and derivative-based coverage as the glass surface.
+- The Shader now rasterizes the outer silhouette and the border from one geometry / one antialiasing field. There is no separately composited white CSS contour to drift away from the gray optical edge.
+- The accepted directional glint is gated to begin inside the border band, avoiding a second bright line on top of the border.
+- Removed the old 1px inward SDF inset: the Shader now owns the outer border-box geometry and uses the CSS outer radius. This avoids the previous CSS-inner-mask / Shader-inner-mask mismatch.
+
+### Preserved
+
+- Visible border thickness, white opacity, radius, and overall visual intent.
+- 3.0.5 refraction / thickness profile and soft directional glint response.
+- DOM text layout, bubble sizes, stage layout, background sampling, and user controls.
+- No production UI changes.
+
+### Validation
+
+Static source checks passed for single-owner perimeter rendering, shared SDF coverage, derivative-AA replacement, and preserved CSS layout dimensions. Actual iPhone Safari visual confirmation remains required. If the single Shader contour is smooth but still too translucent, adjust only the border mix after reviewing the next screenshot; do not restore a second CSS outline.
