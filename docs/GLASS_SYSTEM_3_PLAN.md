@@ -14,28 +14,28 @@
 - CSS 定义几何、尺寸、圆角、层级和交互；WebGL 定义折射与方向性光学细节。
 - 多个玻璃组件共享一个背景源、一个 WebGL Context 和一套 Shader。
 - 以元素屏幕几何映射到统一背景纹理，避免每个组件各自截图造成空间不连续。
-- Shader 负责内部折射与局部方向性 edge glint；不绘制完整白色描边。
+- Shader 使用单一圆角 SDF 统一绘制可见外轮廓、内部折射与局部方向性 edge glint；高光不再叠加第二条白色描边。
 - 显式处理 resize / scroll / background / visibility 生命周期与资源释放。
 
 ## 建议架构
 1. Design Tokens：glass fill / tint / blur / border / shadow / radius。
 2. Scene / Background Source：统一管理默认渐变与用户本地图片，统一 cover 裁切，变化时刷新 GPU 纹理。
 3. Shared Optics Renderer：单一 WebGL Context、共享背景纹理、共享 Shader；多个目标元素只更新几何 uniforms。
-4. Geometry & Mask：从 DOM rect 读取位置尺寸；圆角与 CSS 同源；遮罩内缩，防止双线。
-5. CSS Shell：唯一负责可见边框、圆角、阴影、轻微 tint/frost 和内容布局；不与 Shader 重复画边。
+4. Geometry & Mask：从 DOM rect 读取位置尺寸；圆角与 CSS 同源；Shader 使用同一 SDF 和覆盖率统一处理外轮廓与玻璃内部，避免双线。
+5. CSS Shell：负责布局、圆角尺寸、文字排版和交互区域；保留透明 1px 边框用于布局，但不绘制第二条可见轮廓。Shader 是当前唯一可见边缘的绘制者。
 6. Lifecycle / Fallback：ResizeObserver、IntersectionObserver、scroll、visibility、背景变更；WebGL 不可用或 context lost 时降级到 CSS 材质；明确 dispose。
 
 ## 原型范围
 - 可自定义背景的独立聊天材质场景。
 - 一个共享 WebGL Context 绘制多个圆角气泡内部折射。
-- 局部方向性高光，不绘制整圈 Shader 描边。
+- Shader 统一绘制单一圆角外轮廓；局部方向性高光限制在轮廓内侧，不叠加第二圈白边。
 - 可调折射、厚度、高光、雾面填充。
 - DOM 文字保持清晰。
 - 不接正式后端、认证、聊天数据，不修改正式 UI 或旧 Playground 首页。
 
 ## 验收阶段
 ### P0 — 视觉原型
-确认自定义背景下折射真实改变背景纹理；CSS 只有一层轮廓；低 tint、低 blur；长短气泡圆角自然。
+确认自定义背景下折射真实改变背景纹理；整个气泡只有一套可见轮廓；低 tint、低 blur；长短气泡圆角自然。
 
 ### P1 — 移动端稳定性
 在 iPhone Safari 测滚动、尺寸变化、图片更换、后台恢复、WebGL context lost、大图内存。
@@ -254,3 +254,48 @@ User's latest device screenshot shows the lower gray/optical contour is now smoo
 ### Validation
 
 Static source checks passed for single-owner perimeter rendering, shared SDF coverage, derivative-AA replacement, and preserved CSS layout dimensions. Actual iPhone Safari visual confirmation remains required. If the single Shader contour is smooth but still too translucent, adjust only the border mix after reviewing the next screenshot; do not restore a second CSS outline.
+
+
+
+## P1 mobile resilience pass — 2026-11-02
+
+### Frozen visual reference
+
+- This pass branches from the accepted Playground snapshot at main commit `94b3cdeca4652b76b986143ff5291eef45f2bbfa`.
+- Baseline HTML blob: `ecf6dbce86f1b942073961fb4dfd5a40f4134f9c`.
+- The branch changes renderer lifecycle and fallback behavior only. The Shader's refraction, thickness, frost and directional-glint formulas are unchanged.
+- No changes are made to the main `shen-liang-home` product repository or the Playground `main` branch.
+
+### Source audit findings
+
+1. When WebGL initialization failed, the canvas was hidden but message surfaces retained transparent backgrounds and borders. The page therefore had no real CSS fallback, despite the status text claiming one.
+2. There were no `webglcontextlost` / `webglcontextrestored` handlers. After a context loss, GPU resources would remain invalid and the renderer would not rebuild them.
+3. Replacing a user-selected background image did not revoke the previous object URL, and the file input was not reset to allow selecting the same file again.
+4. `ResizeObserver` was assumed to exist without a fallback path.
+
+### Changes in this pass
+
+- Added a restrained CSS-only fallback surface, activated only when WebGL is unavailable, initialization fails, rendering fails, or the context is lost. It uses a low-opacity fill and modest blur; it does not alter the normal WebGL appearance.
+- Added context-loss handling: prevent the default loss behavior, stop pending animation frames, and switch to CSS fallback.
+- Added context-restoration handling: recreate the program, shaders, buffer and texture, then resize and re-upload the retained background source.
+- Revoke the previous background object URL only after a replacement image has loaded; reset the file input after success or failure so the same image can be selected again.
+- Added a `ResizeObserver` feature check and a window-resize fallback.
+- Revoke the active object URL on a non-BFCache page exit; preserve it when the page is being kept for back/forward cache.
+
+### Preserved
+
+- Current accepted visual snapshot and all optical formulas.
+- Single WebGL context and shared background texture.
+- One shared SDF for the visible perimeter and the interior glass surface.
+- DOM text, bubble geometry, control ranges, default background and user image crop behavior.
+- Main Playground page and production UI.
+
+### Static validation
+
+- JavaScript syntax parsed successfully.
+- Source checks confirm one WebGL context, context-lost and context-restored handlers, CSS fallback activation, object-URL cleanup, same-file reselection, and a ResizeObserver fallback.
+- Source comparison confirms the optical depth/path equations and Shader glint/refraction formulas are unchanged.
+
+### Device validation still required
+
+On iPhone Safari, verify initial WebGL rendering, background replacement (including selecting the same image twice), scroll/pinch zoom, app background/foreground recovery, and orientation/viewport changes. Context-loss recovery and CSS fallback should be tested separately where browser tooling allows. Static checks do not prove runtime behavior or frame rate.
