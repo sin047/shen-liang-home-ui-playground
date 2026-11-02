@@ -62,3 +62,12 @@
 ## P0 geometry/compositing correction — 3.0.2
 
 Black-background inspection exposed a rounded-mask mismatch: the CSS bubble uses a 25px radius (browser-clamped to half the element height), while the Shader radius was independently clamped to 38% of the height. This let the GPU interior mask become more rectangular than the CSS shell near corners. The Shader now uses the same CSS-derived radius, inset by the 1px CSS border, and the half-size uses the same 1px inset. Removed the bubble drop/inset shadow and backdrop-filter from this optical test surface so they cannot create a second halo or blur layer. CSS remains the only visible border. Source-level checks passed; visual verification on the user's device is still required.
+
+
+## P0 edge material refinement — 3.0.3
+
+- Added a 2-device-pixel smooth coverage transition at the rounded SDF boundary to reduce hard-discard aliasing at corners; coverage is returned through fragment alpha.
+- Replaced the broad linear edge highlight with a compact curved bevel profile (`4t(1-t)`) so the highlight sits within the glass surface rather than reading as a second outline.
+- Increased directional contrast between key and fill lighting while keeping a low baseline reflection; the shine control directly scales the bevel response.
+- Kept the center optically clear: the bevel/highlight is edge-local, frost remains at the low default, and CSS remains the only visible border.
+- Source-level checks passed. Device-side appearance and performance still require visual confirmation.
