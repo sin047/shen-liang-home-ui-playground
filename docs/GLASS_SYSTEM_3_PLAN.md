@@ -154,3 +154,28 @@ User clarified that the desired visual baseline is 3.0.5 (not 3.0.6). Restored `
 - This is an isolated rollback trial, not a new visual baseline until the user checks it on-device.
 - If a continuous white ring remains, next isolate the CSS border from Shader glint. After that, test the whereyanlands narrow angular hairline formula as a separate change. DPR / antialiasing is another separate follow-up.
 - Do not copy the Xiaokecat outer 1px ring + inset highlight onto the bubbles. Keep its tokenization and content-layer isolation ideas for later component integration.
+
+
+## P0 edge rasterization correction — 2026-11-02
+
+User device screenshot after the softer glint rollback: the edge brightness is now softer, but the rounded outline still shows obvious stair-stepping / jagged pixels.
+
+### Diagnosis from source inspection
+
+- The CSS border is 1 CSS px, and the Shader radius already subtracts `1 * dpr` to match the inner border radius.
+- However, the Shader's rounded-rectangle half-size was subtracting a fixed `1.0` framebuffer pixel. At DPR 1.5 this disagreed with the radius inset by 0.5 device pixels; at DPR 2 it would disagree by 1 device pixel. The two parts of the SDF mask therefore described slightly different inner geometry.
+- Coverage antialiasing used a fixed `smoothstep(-1, 1, d)` width instead of adapting to the actual fragment footprint.
+- The canvas DPR was capped at 1.5, below the native DPR of many current mobile screens.
+
+### Isolated correction
+
+- Added a shared `insetPx` uniform and use `dpr` for both the SDF half-size inset and rounded radius inset, aligning the Shader mask to the 1 CSS px CSS border.
+- When `OES_standard_derivatives` is available, coverage now uses `fwidth(d)` for fragment-footprint-aware antialiasing. Browsers without the extension retain the prior fixed-width coverage fallback.
+- Raised the DPR ceiling to 2.0 with a 2.2-megapixel backing-store budget, preventing unnecessarily large render targets on wide stages.
+- Kept the soft pre-3.0.4 edge-glint response, 3.0.5 thickness/refraction profile, CSS border appearance, tint, and layout unchanged.
+
+### Validation status
+
+- Static source checks passed for derivative and fallback paths, matching geometry inset, adaptive DPR budget, and unchanged optical parameters.
+- Actual iPhone Safari shader compilation and visual smoothness remain pending user-device validation.
+- This is a rasterization correction, not a new visual baseline until the user confirms the result.
