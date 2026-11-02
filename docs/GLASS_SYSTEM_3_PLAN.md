@@ -191,3 +191,35 @@ The previous 2.0 DPR ceiling is still below native density on common 3x mobile d
 - Increased the backing-store budget from 2.2 MP to 3.0 MP, enough for a 390–430 CSS px wide, 660–760 px tall mobile stage at 3x in typical layouts.
 - Kept derivative-based coverage, SDF geometry, CSS border, refraction, thickness, and glint unchanged.
 - This remains an isolated raster-density trial. Verify on the same iPhone/Safari device; if the curve is still stepped, next inspect whether the jagged outer contour is exclusively the WebGL surface or a CSS compositing artifact, and consider a dedicated MSAA/offscreen edge pass only if needed.
+
+
+## Full edge-rasterization audit — 2026-11-02
+
+User supplied a close-up screenshot after the DPR 3.0 trial. The curved perimeter remains strongly stepped. The previous explanation (device DPR alone) was incomplete.
+
+### Source audit findings
+
+1. The renderer sized its backing store from `devicePixelRatio` only. On iOS Safari, pinch zoom is exposed separately through `visualViewport.scale`; the WebGL canvas can therefore be magnified by the visual viewport without a corresponding increase in its backing-store resolution. This is especially relevant to the user's extreme close-up inspection.
+2. Geometry uniforms used the requested scalar DPR, while the actual backing-store dimensions are rounded to integer pixels. The exact effective X/Y scale can differ slightly from the requested DPR, leaving a subpixel mismatch between DOM geometry and the GPU mask.
+3. Coverage used only half of `fwidth(d)` as its transition radius. That is narrower than the conventional derivative-based SDF edge transition and can leave a visibly hard pixel staircase on curved contours.
+4. The CSS border and Shader glint are separate visual layers. The CSS border is the only explicit outline; the Shader edgeBand also reaches maximum at the inner SDF boundary, so both layers can appear as two closely spaced bright contours. This remains a separate visual-layer issue and should be isolated after raster quality is verified, rather than increasing white edge intensity.
+
+### Corrections in this pass
+
+- Effective target scale now includes `visualViewport.scale`, capped at 4x and constrained by a 5-megapixel backing-store budget.
+- Added visualViewport resize / scroll listeners so the canvas rerenders when pinch zoom or visual viewport position changes.
+- Geometry uniforms now use the exact effective X and Y backing-store scales after integer canvas sizing, rather than the requested scalar DPR.
+- Increased SDF coverage transition from `0.5 * fwidth(d)` to `1.0 * fwidth(d)` (with a 0.75px floor).
+- The renderer status now reports effective DPR, derivative-AA mode, and whether the WebGL context actually received MSAA.
+
+### Preserved
+
+- CSS border color, width, and radius.
+- 3.0.5 thickness / refraction profile.
+- Soft directional edge-glint response.
+- Background upload, bubble layout, and typography.
+- No change to the production UI or the main project repository.
+
+### Validation
+
+Static checks passed for viewport-scale tracking, exact X/Y geometry mapping, derivative coverage, and preserved optical parameters. Runtime values and visual output must still be checked on the user's iPhone Safari; the status line now exposes DPR / AA / MSAA for that purpose.
