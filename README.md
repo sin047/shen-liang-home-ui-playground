@@ -31,3 +31,7 @@
 - Test with a custom image on iPhone Safari before considering integration. DOM capture, dynamic app backgrounds, scrolling/keyboard edge cases, context-loss recovery, and performance validation remain open.
 
 - `docs/lab/liquid-glass-231.html`: follow-up to 2.3 with stronger lens displacement, SDF-derived edge normals, reduced white wash, and visible CSS edge fallback.
+
+## Liquid Glass 2.4 rebuild
+
+The 2.2 and 2.3 experimental pages were superseded after review found that their GPU layer was a translucent white overlay rather than a clean replacement of the background pixels inside each bubble. The 2.4 rebuild uses one WebGL context and directly re-samples the background texture within rounded bubble masks; outside each mask the shader is transparent. Bubble DOM backgrounds are transparent and text remains above the GPU layer. Real-device Safari verification is still required.
