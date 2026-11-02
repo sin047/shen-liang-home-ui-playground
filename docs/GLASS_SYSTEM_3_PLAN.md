@@ -179,3 +179,15 @@ User device screenshot after the softer glint rollback: the edge brightness is n
 - Static source checks passed for derivative and fallback paths, matching geometry inset, adaptive DPR budget, and unchanged optical parameters.
 - Actual iPhone Safari shader compilation and visual smoothness remain pending user-device validation.
 - This is a rasterization correction, not a new visual baseline until the user confirms the result.
+
+
+### Follow-up: native-density canvas trial — 2026-11-02
+
+User device screenshot confirms straight edges look continuous, while the curved outline still shows pronounced stair-stepping. Pixel inspection shows the jagged contour is the outer rasterized edge; the smoother inner contour is consistent with the CSS border overlaying the WebGL-rendered glass edge.
+
+The previous 2.0 DPR ceiling is still below native density on common 3x mobile displays. The canvas is therefore being upscaled by the browser, which can preserve a visibly stepped curve even with derivative-based SDF coverage.
+
+- Raised the DPR ceiling from 2.0 to 3.0.
+- Increased the backing-store budget from 2.2 MP to 3.0 MP, enough for a 390–430 CSS px wide, 660–760 px tall mobile stage at 3x in typical layouts.
+- Kept derivative-based coverage, SDF geometry, CSS border, refraction, thickness, and glint unchanged.
+- This remains an isolated raster-density trial. Verify on the same iPhone/Safari device; if the curve is still stepped, next inspect whether the jagged outer contour is exclusively the WebGL surface or a CSS compositing artifact, and consider a dedicated MSAA/offscreen edge pass only if needed.
