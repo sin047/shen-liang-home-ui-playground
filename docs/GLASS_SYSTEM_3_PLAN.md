@@ -413,6 +413,7 @@ This pass is intentionally limited to scheduling/lifecycle behavior. Re-run iPho
 - Stale image loads are ignored and their object URLs released.
 - Context-loss state clears invalid WebGL object references; non-BFCache page exit disposes live GL resources.
 - CSS, controls, and DOM message markup are unchanged.
+- Numerical center-cover mapping spot checks for portrait, landscape, and near-matching aspect ratios agree with the previous CPU-cropped mapping to floating-point precision.
 
 ### Device validation
 
