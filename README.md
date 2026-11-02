@@ -35,3 +35,5 @@
 ## Liquid Glass 2.4 rebuild
 
 The 2.2 and 2.3 experimental pages were superseded after review found that their GPU layer was a translucent white overlay rather than a clean replacement of the background pixels inside each bubble. The 2.4 rebuild uses one WebGL context and directly re-samples the background texture within rounded bubble masks; outside each mask the shader is transparent. Bubble DOM backgrounds are transparent and text remains above the GPU layer. Real-device Safari verification is still required.
+
+- `docs/lab/liquid-glass-243.html`: single-frame correction. Removes the extra inner CSS pseudo-element and insets the GPU refraction mask by 2 CSS pixels so the original 2.0 CSS frame is the only visible outline.
