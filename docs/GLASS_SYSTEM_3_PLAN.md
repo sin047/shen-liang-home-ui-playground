@@ -113,3 +113,8 @@ User device review of 3.0.6: depth became too abrupt/plasticky and the edge appe
 ## 3.0.9 optical whitening cleanup
 
 User screenshot still showed a strong milky/plastic rim. Clarification: 3.0.7 had removed the three 3.0.6 volume cues, but 3.0.8 then added a new Fresnel tint, and the earlier frost-fill control remained active. Removed the residual Fresnel tint and frost-fill shader contribution and removed the now-misleading frost slider/control/binding. The only remaining white shader mix is the previously accepted directional edge-glint. Preserved thickness/refraction, rounded SDF geometry and CSS-only 1px border. Static checks passed; verify on device. If the rim remains rough, next isolate edge-glint versus CSS border rather than adding more shading.
+
+
+## User decision — restore 3.0.6 baseline
+
+User explicitly chose to return the live playground to the exact 3.0.6 implementation and discard the later visual experiments (3.0.7–3.0.9) from the active preview. The HTML was restored byte-for-byte from the 3.0.6 page commit `74d7ed75f044c6541d7faf86a23bb119e1d51bee`. Later Git commits remain in repository history for audit/recovery; they are no longer part of the deployed page. Do not reintroduce 3.0.7–3.0.9 effects unless the user explicitly asks.
