@@ -100,3 +100,11 @@ User reports geometry and clarity are accepted, but bubbles still visually merge
 ## 3.0.7 visual rollback
 
 User device review of 3.0.6: depth became too abrupt/plasticky and the edge appeared rough/thick. Reverted only the 3.0.6 volumetric body tint, broad face reflection and opposing inner shade. Preserved the accepted 3.0.5 thickness/refraction profile, 3.0.4 directional glint, rounded SDF coverage, and single CSS border. Do not reintroduce broad interior whitening/shading as a proxy for depth. Next exploration should focus on subtle optical separation (very low-contrast Fresnel/transmission) and edge antialias/compositing diagnosis, tested separately. Static checks passed; device recheck needed.
+
+
+## P0 subtle Fresnel separation — 3.0.8
+
+- Added a low-contrast, edge-local Fresnel-like transmission tint. Its falloff follows the interior distance to the rounded SDF boundary and its intensity varies with the directional key-light angle.
+- Kept the tint deliberately restrained (2.8% maximum blend toward a cool neutral), with no broad face whitening, extra outline, CSS shadow, or additional border.
+- Preserved accepted 3.0.4 glint curve, 3.0.5 thickness/refraction profile, SDF geometry and CSS-only border.
+- Source checks passed. Device-side review on bright floral and dark/high-contrast backgrounds is required; do not increase the tint unless it remains invisible in both.
