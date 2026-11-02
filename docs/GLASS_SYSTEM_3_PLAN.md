@@ -299,3 +299,38 @@ Static source checks passed for single-owner perimeter rendering, shared SDF cov
 ### Device validation still required
 
 On iPhone Safari, verify initial WebGL rendering, background replacement (including selecting the same image twice), scroll/pinch zoom, app background/foreground recovery, and orientation/viewport changes. Context-loss recovery and CSS fallback should be tested separately where browser tooling allows. Static checks do not prove runtime behavior or frame rate.
+
+
+
+## P1 mobile acceptance — 2026-11-02
+
+User completed the normal-path iPhone Safari validation (A–F) and reported all checks passing.
+
+- Initial page load: all four bubbles render; screenshot reports `WebGL · DPR 3.00 · fwidth AA · MSAA on`.
+- Custom background: selected image appears correctly and the shared WebGL sampling/refraction follows it.
+- Re-selecting the same image and replacing backgrounds: confirmed working.
+- Scroll, pinch zoom, and viewport/orientation changes: confirmed aligned and responsive.
+- App background/foreground and lock-screen return: confirmed renderer recovers without manual refresh.
+- No visual regression was reported in the accepted bubble appearance.
+
+### P1 result
+
+The normal iPhone Safari mobile path is accepted. This is a user-device validation result, not a claim that every exceptional browser/GPU path is covered.
+
+Still optional / not yet device-injected:
+- Explicit WebGL context-loss and context-restoration simulation.
+- Deliberately invalid/corrupt image load.
+
+The source-level fallback and context lifecycle checks remain recorded above. Do not block ordinary P1 acceptance on the optional context-loss injection; retain it as a targeted resilience check if desktop browser tooling becomes available.
+
+### Next phase: P2 performance and lifecycle audit
+
+Proceed without changing the accepted visual profile. Audit and measure:
+1. Avoid redundant full-background texture uploads on geometry-only redraws.
+2. Coalesce scroll / resize / visualViewport events into one animation-frame update.
+3. Avoid drawing off-screen glass targets where practical without breaking scroll re-entry.
+4. Bound GPU texture and canvas memory for large photos / high-DPR screens.
+5. Add explicit renderer disposal and recovery checks.
+6. Measure frame time and memory on representative mobile conditions before changing defaults.
+
+No production integration is authorized by this phase. P2 remains isolated in the UI Playground; only after evidence-based P2 acceptance should integration into the frozen product UI be discussed.
