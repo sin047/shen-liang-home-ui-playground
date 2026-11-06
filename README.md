@@ -2,6 +2,14 @@
 
 独立视觉实验场，与正式产品仓库分离。
 
+## Glass Material Kit 0.5 · 固定屏幕壁纸（待 iPhone 验收）
+
+用户在 Kit 0.4 真机测试中确认 49 个目标组件与视口剔除正常，但图片纵向重复接缝明显，希望**背景固定，玻璃 UI 在其上方滚动**。
+
+0.5 独立实验页：`docs/glass-kit-v05.html`；引擎：`docs/glass-material-kit-v05.js`；固定背景样式：`docs/glass-material-kit-v05.css`。使用外置 `position:fixed` 单张背景，不再纵向重复；光学纹理按照可见组件的屏幕坐标采样，保留 0.4 的视口级 Canvas、资源限额、诊断和组件参数。技术规范与实机检查清单见 `docs/GLASS_MATERIAL_KIT_05.md`。
+
+**仍是独立 Playground 测试版本。Kit 0.1–0.4 全部保留，正式「家 ^ ^」界面与产品定位不作修改。**
+
 ## Glass Material Kit 0.4 · Long Page Architecture（待验收）
 
 新建独立页面 `docs/glass-kit-v04.html` 与引擎 `docs/glass-material-kit-v04.js`。针对 Kit 0.3 真机长页面截图出现的背景放大与诊断旧数据问题，使用**固定参考大小、垂直重复的背景**及随可见区域移动的 viewport-sized Canvas；同时提供 `requestDiagnostics()` 等待实际绘制完成，显示当前 DOM 组件总数与上次绘制状态。
