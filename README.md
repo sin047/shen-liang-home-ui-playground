@@ -2,6 +2,14 @@
 
 独立视觉实验场，与正式产品仓库分离。
 
+## Glass System 4.1 — CLEAR Lens & Light（未验收实验）
+
+独立页面：`docs/glass-system-41.html`，在 4.0 的基础上重新调整全表面折射、局部高光与自适应内侧明暗。页面右下角直接显示 WebGL / CSS fallback 状态，并提供「原图对照」来核对实际透镜效果，避免把 CSS 兼容样式误认为玻璃渲染。
+
+本轮的技术变更、参考许可边界与 iPhone Safari 验收清单：`docs/GLASS_SYSTEM_41_MATERIAL_PASS.md`。
+
+**原 4.0、3.0 页面完整保留，正式产品仓库未修改。当前 4.1 还需要手机实测，不能标记为视觉通过。**
+
 ## Glass System 4.0 — CLEAR Optical Study（实验版）
 
 新页面：`docs/glass-system-40.html`
