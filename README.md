@@ -2,6 +2,12 @@
 
 独立视觉实验场，与正式产品仓库分离。
 
+## Glass Material Kit 0.4 · Long Page Architecture（待验收）
+
+新建独立页面 `docs/glass-kit-v04.html` 与引擎 `docs/glass-material-kit-v04.js`。针对 Kit 0.3 真机长页面截图出现的背景放大与诊断旧数据问题，使用**固定参考大小、垂直重复的背景**及随可见区域移动的 viewport-sized Canvas；同时提供 `requestDiagnostics()` 等待实际绘制完成，显示当前 DOM 组件总数与上次绘制状态。
+
+**注意**：背景重复周期的拼接可能明显，快速滚动仍可能出现画布位置滞后一帧；这些均需 iPhone Safari 测试。光学材质参数及原 Kit 0.1/0.2/0.3 全部保留，不修改正式「家 ^ ^」仓库。技术边界见 `docs/GLASS_MATERIAL_KIT_04.md`。
+
 ## Glass Material Kit 0.3 · Stability & Performance（待实机验收）
 
 独立 0.3 测试页：`docs/glass-kit-v03.html`，引擎：`docs/glass-material-kit-v03.js`。在**不改 0.2 CLEAR Shader、组件尺寸预设和正式 UI**的前提下，新增 Canvas 渲染缓冲/像素上限、屏幕外组件剔除、可见性与 BFCache 生命周期控制、40 组件压力实验与按需诊断；扩展模拟 WebGL CI 验证。
