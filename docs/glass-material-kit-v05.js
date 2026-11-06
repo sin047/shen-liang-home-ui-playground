@@ -472,10 +472,12 @@
       canvas.remove();
       if(insertedBackground)backdrop.remove();
       else{
-        backdrop.style.backgroundImage=previousBackgroundStyle.backgroundImage;
-        backdrop.style.backgroundSize=previousBackgroundStyle.backgroundSize;
-        backdrop.style.backgroundPosition=previousBackgroundStyle.backgroundPosition;
-        backdrop.style.backgroundRepeat=previousBackgroundStyle.backgroundRepeat;
+        // Empty CSS declarations must be restored as empty strings, not
+        // assigned "undefined" on browsers using CSSStyleDeclaration.
+        backdrop.style.backgroundImage=previousBackgroundStyle.backgroundImage||"";
+        backdrop.style.backgroundSize=previousBackgroundStyle.backgroundSize||"";
+        backdrop.style.backgroundPosition=previousBackgroundStyle.backgroundPosition||"";
+        backdrop.style.backgroundRepeat=previousBackgroundStyle.backgroundRepeat||"";
       }
       scene.classList.remove("glass-kit-scene","glass-kit-fallback");
       delete scene.dataset.glassState;
