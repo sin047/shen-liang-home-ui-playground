@@ -14,6 +14,7 @@
     texturePixelBudget: 5000000
   });
   const clamp = (v,a,b) => Math.max(a,Math.min(b,v));
+  const activeScenes = new WeakMap();
   const own = (obj,key) => Object.prototype.hasOwnProperty.call(obj,key);
 
   function initialBackground() {
@@ -43,6 +44,7 @@
       throw new Error("GlassKit.mount({scene}) requires an Element");
     }
     const scene=config.scene;
+    if(activeScenes.has(scene))throw new Error("GlassKit scene is already mounted");
     const settings={...defaults,...(config.settings||{})};
     scene.classList.add("glass-kit-scene");
     let backdrop=config.backgroundElement||scene.querySelector(".glass-kit-background");
@@ -319,7 +321,7 @@
       if(insertedBackground)backdrop.remove();
       scene.classList.remove("glass-kit-scene","glass-kit-fallback");
       delete scene.dataset.glassState;
-      report=()=>{};
+      activeScenes.delete(scene);
     }
 
     canvas.addEventListener("webglcontextlost",onContextLost);
@@ -343,8 +345,10 @@
       const initial=initialBackground();
       setSource(initial,initial.toDataURL("image/jpeg",.87));
     }
-    return {setSource,setBackgroundFile,update,refresh:schedule,destroy,
+    const api={setSource,setBackgroundFile,update,refresh:schedule,destroy,
       getState:()=>({state:ready?"gpu":"fallback",aaMode,settings:{...settings}})};
+    activeScenes.set(scene,api);
+    return api;
   }
   global.GlassMaterialKit={version:"0.1.0",mount:createMaterialScene};
 })(window);
