@@ -58,8 +58,8 @@ function initRenderer(){
     aaMode=derivativeSupport?'fwidth AA':'fallback AA';
     const fragmentSource=derivativeSupport
       ? '#extension GL_OES_standard_derivatives : enable'+String.fromCharCode(10)+fs.replace(
-          'float aa=1.0;float coverage=1.-smoothstep(-aa,aa,d);',
-          'float aa=max(fwidth(d),0.75);float coverage=1.-smoothstep(-aa,aa,d);'
+          'float aa=1.0;',
+          'float aa=max(fwidth(d),0.75);'
         )
       : fs;
     program=gl.createProgram();
