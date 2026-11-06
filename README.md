@@ -2,6 +2,10 @@
 
 独立视觉实验场，与正式产品仓库分离。
 
+## Glass System 4.2.1 — Smooth Lens Pass（待验收实验）
+
+独立版本：`docs/glass-system-421.html`。基于 iPhone Safari 已运行的 4.2，收敛局部鼓包、切向扰动、局部高光与内侧厚度，保留清透 CLEAR、圆角、相册背景与原图对照功能。**原 4.2 保留**，不改变正式产品 UI。技术修改与测试计划：`docs/GLASS_SYSTEM_421_SMOOTH_LENS.md`。
+
 ## Glass System 4.2 — Optical Volume（未验收实验）
 
 新页面：`docs/glass-system-42.html`，在 4.1 的清透基础上独立试验更有层次的透镜曲率、局部曲面反光与柔和的内侧厚度。保留照片上传、原图对照和 GPU 状态提示，可随时返回 4.1 比较。**这版尚未经过 iPhone Safari 视觉验收，不能视为最终外观。**
