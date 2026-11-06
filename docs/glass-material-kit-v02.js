@@ -169,14 +169,13 @@
     }
     function setSource(image,cssUrl,retainFileRequest=false){
       if(disposed)throw new Error("GlassKit instance already destroyed");
-      const obsolete=activeUrl&&cssUrl!==activeUrl?activeUrl:null;
-      if(!retainFileRequest)requestId++;
-      // Keep the visible CSS backdrop and the refracted texture sourced
-      // from the same image. Never silently combine different backgrounds.
+      // Validate and normalize before replacing the active source or URL.
       const resolvedUrl=typeof cssUrl==="string"?cssUrl:
         typeof image.toDataURL==="function"?image.toDataURL("image/jpeg",.86):
         (image.currentSrc||image.src||"");
       if(!resolvedUrl)throw new Error("Provide a background CSS URL with this image source");
+      if(!retainFileRequest)requestId++;
+      const obsolete=activeUrl&&resolvedUrl!==activeUrl?activeUrl:null;
       source=image;
       backdrop.style.backgroundImage="url("+JSON.stringify(resolvedUrl)+")";
       if(obsolete){URL.revokeObjectURL(obsolete);activeUrl=null;}
