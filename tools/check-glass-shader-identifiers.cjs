@@ -61,4 +61,16 @@ for (const filename of pages) {
   checkIdentifiers(shader.replace("float aa=1.0;", injection[1]),
     filename, "OES_standard_derivatives");
 }
-console.log("PASS: 4.1/4.2/4.2.1/4.2.2 fragment shader identifiers and derivative-AA substitutions");
+// The reusable kit keeps its fragment shader in an external JavaScript asset.
+const kitFile = "docs/glass-material-kit.js";
+const kit = fs.readFileSync(kitFile, "utf8");
+const source = kit.match(/const FRAGMENT_SHADER = ("(?:\\.|[^"\\])*");/);
+if (!source) throw Error(kitFile + ": external fragment shader not found");
+const externalFragment = JSON.parse(source[1]);
+checkIdentifiers(externalFragment, kitFile, "base");
+const replacement = kit.match(/FRAGMENT_SHADER\.replace\("float aa=1\.0;","([^"]+)"\)/);
+if (!replacement) throw Error(kitFile + ": derivative substitution not found");
+checkIdentifiers(externalFragment.replace("float aa=1.0;", replacement[1]),
+  kitFile, "OES_standard_derivatives");
+
+console.log("PASS: all inline and shared-kit fragment shader declarations");
