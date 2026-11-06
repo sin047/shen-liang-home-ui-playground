@@ -2,6 +2,12 @@
 
 独立视觉实验场，与正式产品仓库分离。
 
+## Glass Material Kit 0.3 · Stability & Performance（待实机验收）
+
+独立 0.3 测试页：`docs/glass-kit-v03.html`，引擎：`docs/glass-material-kit-v03.js`。在**不改 0.2 CLEAR Shader、组件尺寸预设和正式 UI**的前提下，新增 Canvas 渲染缓冲/像素上限、屏幕外组件剔除、可见性与 BFCache 生命周期控制、40 组件压力实验与按需诊断；扩展模拟 WebGL CI 验证。
+
+原 0.1 / 0.2 及全部 4.x 实验页完整保留。性能指标目前属于模拟测试和 RGBA 粗略估算，**真实 iPhone Safari 性能仍待验证**。详见：`docs/GLASS_MATERIAL_KIT_03.md`。
+
 ## Glass Material Kit 0.2 · 自适应组件材质（待验收）
 
 基于用户已在 iPhone Safari 验证的 Kit 0.1，新建独立可对照页面：`docs/glass-kit-v02.html`，使用 `docs/glass-material-kit-v02.js`。新增 compact/control/panel/neutral 组件尺寸适配、显式属性优先级及背景图片竞态保护，并加入模拟 WebGL 生命周期回归测试。可在页面内切换适配模式，对比不同尺寸组件的折射与局部受光。
