@@ -380,17 +380,30 @@
         metrics.lastDrawn=visibleDraws;
         metrics.lastCulled=culled;
         metrics.lastTargets=all.length;
+        dirty=false;
       }catch(error){
         try{gl.disable(gl.SCISSOR_TEST);}catch(_){}
         fallback(error);
-      }
+      }finally{finishMeasurements();}
     }
     function schedule(){
-      if(disposed||raf||document.hidden||suspended||!sceneVisible)return;
+      if(disposed)return;
+      dirty=true;
+      if(raf||document.hidden||suspended||!sceneVisible)return;
       raf=requestAnimationFrame(draw);
     }
     function pause(){
       if(raf){cancelAnimationFrame(raf);raf=0;}
+      finishMeasurements();
+    }
+    function requestDiagnostics(){
+      if(disposed||document.hidden||suspended||!sceneVisible||!ready){
+        return Promise.resolve(diagnosticSnapshot());
+      }
+      return new Promise(resolve=>{
+        pendingMeasurements.push(resolve);
+        schedule();
+      });
     }
     function update(changes){
       if(disposed)return;
@@ -487,10 +500,8 @@
       setSource(initial,initial.toDataURL("image/jpeg",.87));
     }
     const api={setSource,setBackgroundFile,update,refresh:schedule,destroy,
-      getState:()=>({state:ready?"gpu":"fallback",aaMode,settings:{...settings}}),
-      getDiagnostics:()=>Object.freeze({...metrics,
-        estimatedGpuRGBABytes:4*(metrics.canvasPixels+metrics.texturePixels),
-        suspended:suspended||document.hidden||!sceneVisible})};
+      requestDiagnostics,getDiagnostics:diagnosticSnapshot,
+      getState:()=>({state:ready?"gpu":"fallback",aaMode,settings:{...settings}})};
     activeScenes.set(scene,api);
     return api;
   }
