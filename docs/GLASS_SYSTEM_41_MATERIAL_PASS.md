@@ -58,3 +58,29 @@
 6. 切换 SMOKED、滚动、缩放、横竖屏、相册换图和后台恢复；不出现丢纹理或圆角错位。
 
 **状态说明：** 本轮完成的是独立代码实施、JavaScript 静态检查与圆角射线数值检查；真实 iPhone Safari 上的 Shader 编译、WebGL 连续渲染与最终外观尚未经验证。不声称与参考截图已达到像素级一致。
+
+
+## 2026-11-06 · iPhone Safari 实机诊断与编译错误修正
+
+用户提供 4.1 的真实 iPhone Safari 截图，画面明确显示：
+
+- 画面内：`CSS fallback · 未运行光学`；
+- 光学状态：`CSS fallback · ERROR: 0:47: 'd': undeclared identifier`。
+
+由此确认之前看到的均匀浅白气泡是 CSS 降级表现，**不能拿它判断 4.1 的 WebGL 玻璃质感**。
+
+### 根因（已定位）
+
+原 Shader 在 `main()` 中定义 `float sd=roundedDistance(...)`，但启用 `OES_standard_derivatives` 时，构建代码错误地注入 `float aa=max(fwidth(d),0.75);`。标识符 `d` 不存在，导致片元 Shader 编译失败。Safari 的错误行号和标识符与这一处注入代码吻合。
+
+### 最小修复（单行）
+
+将抗锯齿插入模板从 `fwidth(d)` 改为 `fwidth(sd)`。不改变 Shader 的折射公式、控制参数、背景纹理、UI、CSS fallback 或其它几何逻辑。
+
+验证：JavaScript 可以解析；片元 Shader 中 `sd` 先声明后使用；启用导数扩展时组装的源码包含 `fwidth(sd)`，且不再包含 `fwidth(d)`；无扩展的旧版抗锯齿分支仍保留。
+
+**限制：** 当前执行环境没有可用的 WebGL 浏览器上下文，因此未能取得真实 GPU Shader 编译或绘制通过的记录；必须由部署后的 iPhone Safari 再测。现在不需要安装任何 iPhone 日志采集程序，已有页面内的运行标识和报错文本足够定位本次问题。
+
+### 重新测试
+
+部署后打开 4.1。画面右下角应从 `CSS fallback` 变为 `GPU · fwidth AA`（或 GPU + fallback AA）；然后使用「原图对照／恢复玻璃」比较折射。如果仍出现编译错误，保留报错状态的截图，再按明确的标识符／行号继续修复。
