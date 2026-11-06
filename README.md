@@ -2,6 +2,12 @@
 
 独立视觉实验场，与正式产品仓库分离。
 
+## Glass System 4.2.2 — Continuous Optics（待验收实验）
+
+独立页面：`docs/glass-system-422.html`。基于 4.2.1 清透玻璃，将容易出现局部水波的肩部折射改为在边界归零的连续单峰透镜，并增加局部曲面反光而不增加整圈白边。保留相册背景、GPU 状态、原图对照和圆角形状；**4.2.1 与所有旧版均完整保留，正式 UI 不变。**
+
+技术说明与 iPhone Safari 对照步骤：`docs/GLASS_SYSTEM_422_CONTINUOUS_OPTICS.md`。
+
 ## Glass System 4.2.1 — Smooth Lens Pass（待验收实验）
 
 独立版本：`docs/glass-system-421.html`。基于 iPhone Safari 已运行的 4.2，收敛局部鼓包、切向扰动、局部高光与内侧厚度，保留清透 CLEAR、圆角、相册背景与原图对照功能。**原 4.2 保留**，不改变正式产品 UI。技术修改与测试计划：`docs/GLASS_SYSTEM_421_SMOOTH_LENS.md`。
