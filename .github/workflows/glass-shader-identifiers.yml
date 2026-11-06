@@ -1,0 +1,25 @@
+name: Glass shader identifier guard
+
+on:
+  pull_request:
+    paths:
+      - 'docs/glass-system-4*.html'
+      - 'tools/check-glass-shader-identifiers.cjs'
+      - '.github/workflows/glass-shader-identifiers.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'docs/glass-system-4*.html'
+      - 'tools/check-glass-shader-identifiers.cjs'
+      - '.github/workflows/glass-shader-identifiers.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  shader-identifiers:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check GLSL declarations and derivative AA source variants
+        run: node tools/check-glass-shader-identifiers.cjs

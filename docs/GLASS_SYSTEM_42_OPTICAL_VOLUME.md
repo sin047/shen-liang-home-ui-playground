@@ -59,3 +59,16 @@
 7. 滚动、缩放、横竖屏、更换相册图片、切换 App 后恢复，GPU 状态保持正常。
 
 这轮将优先等待用户视觉反馈，不会将它认定为最终满意或直接接入正式 UI。
+
+
+## 2026-11-06 · iPhone Safari shader compile failure and minimal fix
+
+用户实测 4.2 截图显示 `CSS fallback · 未运行光学`，控制栏给出精确编译错误：`ERROR: 0:136: 'innerRim': undeclared identifier`。因此该截图是 CSS 降级样式，不是新版光学结果。
+
+**根因：** 4.2 在更换内侧光学变量时，将 `innerRim` 改为 `bevel`，但是 SMOKED 吸收分支的 `float absorb=0.18+0.10*innerRim;` 没有同步更名。GLSL 编译器会检查整个片元 Shader，即使用户选择 CLEAR，也不能忽略 SMOKED 分支中的未声明符号。
+
+**修复：** 4.2 HTML 中只替换一处 `innerRim` → `bevel`。这不改变本轮 CLEAR 透镜曲线、局部反光、透明度、圆角、布局或背景处理。原 4.1、4.0、3.0 保持不变。
+
+**防回归：** 增加 `tools/check-glass-shader-identifiers.cjs`，静态提取 4.1 和 4.2 嵌入的 GLSL，检查基础与开启导数扩展的两条 Shader 源码路径是否存在未声明标识符。验证器对修复后代码通过；重新注入 4.2 的 `innerRim` 旧引用和 4.1 的 `fwidth(d)` 错误后，均能准确报告。这是**静态声明检查**，不等于真实 GPU 编译；需要 iPhone Safari 再次确认 GPU 状态。
+
+**复测方式：** 使用既有 4.2 页面，画面右下角应显示 `GPU · fwidth AA`；如果仍显示 `CSS fallback`，将编译错误文本截图返回。确认成功后才评价材质，尽量在同一樱花背景下与 4.1 对比。
