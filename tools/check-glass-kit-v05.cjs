@@ -322,7 +322,7 @@ api.refresh();flush();
   assert.equal(canvas.removed,true);
   assert.equal(io.disconnected,true,"Intersection observer must be disconnected");
   assert.ok(revoked.includes("blob:local-2"),"Destroy must revoke current URL");
-  assert.equal(background.style.backgroundImage,undefined,
+  assert.equal(background.style.backgroundImage,"",
     "Unmount must restore an external wallpaper's previous image");
   assert.equal(scene.dataset.glassState,undefined);
   await assert.rejects(api.setBackgroundFile({name:"after-destroy"}),/already destroyed/);
