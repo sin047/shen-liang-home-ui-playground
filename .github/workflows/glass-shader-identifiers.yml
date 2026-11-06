@@ -7,6 +7,9 @@ on:
       - 'docs/glass-material-kit.js'
       - 'docs/glass-material-kit-v02.js'
       - 'docs/glass-material-kit-v03.js'
+      - 'docs/glass-material-kit-v04.js'
+      - 'docs/glass-kit-v04.html'
+      - 'tools/check-glass-kit-v04.cjs'
       - 'docs/glass-kit-v03.html'
       - 'tools/check-glass-kit-v03.cjs'
       - 'docs/glass-kit-v02.html'
@@ -23,6 +26,9 @@ on:
       - 'docs/glass-material-kit.js'
       - 'docs/glass-material-kit-v02.js'
       - 'docs/glass-material-kit-v03.js'
+      - 'docs/glass-material-kit-v04.js'
+      - 'docs/glass-kit-v04.html'
+      - 'tools/check-glass-kit-v04.cjs'
       - 'docs/glass-kit-v03.html'
       - 'tools/check-glass-kit-v03.cjs'
       - 'docs/glass-kit-v02.html'
@@ -48,6 +54,8 @@ jobs:
           node --check docs/glass-material-kit.js
           node --check docs/glass-material-kit-v02.js
           node --check docs/glass-material-kit-v03.js
+          node --check docs/glass-material-kit-v04.js
           node tools/check-glass-kit.cjs
           node tools/check-glass-kit-v02.cjs
           node tools/check-glass-kit-v03.cjs
+          node tools/check-glass-kit-v04.cjs

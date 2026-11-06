@@ -63,7 +63,8 @@ for (const filename of pages) {
 }
 // The reusable kit keeps its fragment shader in an external JavaScript asset.
 for(const kitFile of ["docs/glass-material-kit.js","docs/glass-material-kit-v02.js",
-  "docs/glass-material-kit-v03.js"]){
+  "docs/glass-material-kit-v03.js",
+  "docs/glass-material-kit-v04.js"]){
   const kit = fs.readFileSync(kitFile, "utf8");
   const source = kit.match(/const FRAGMENT_SHADER = ("(?:\\.|[^"\\])*");/);
   if (!source) throw Error(kitFile + ": external fragment shader not found");
@@ -75,4 +76,4 @@ for(const kitFile of ["docs/glass-material-kit.js","docs/glass-material-kit-v02.
     kitFile, "OES_standard_derivatives");
 }
 
-console.log("PASS: inline and Kit 0.1/0.2/0.3 GLSL declarations");
+console.log("PASS: inline and Kit 0.1/0.2/0.3/0.4 GLSL declarations");
