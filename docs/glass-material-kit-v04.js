@@ -75,9 +75,13 @@
     let raf=0,disposed=false,aaMode="fallback AA";
     let scaleX=1,scaleY=1,canvasW=0,canvasH=0;
     let observer=null,mutationObserver=null,sceneObserver=null;
-    let suspended=false,sceneVisible=true;
+    let suspended=false,sceneVisible=true,dirty=true;
+    let wallpaperReferenceHeight=0,wallpaperReferenceWidth=0;
+    let wallpaperTileWidth=0,wallpaperTileHeight=0;
+    const pendingMeasurements=[];
     const metrics={frames:0,lastDrawn:0,lastCulled:0,lastTargets:0,
-      canvasPixels:0,texturePixels:0};
+      canvasPixels:0,texturePixels:0,canvasCssHeight:0,
+      wallpaperTileHeight:0,wallpaperTileWidth:0,viewportTop:0};
     const attached=new Set();
     const handles={};
 
@@ -166,6 +170,7 @@
         if(code!==gl.NO_ERROR)throw new Error("WebGL texture upload failed: "+code);
         textureWidth=tw;textureHeight=th;textureReady=true;
         metrics.texturePixels=tw*th;
+        wallpaperTileWidth=0;wallpaperTileHeight=0;
       }finally{
         gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL,0);
         if(staging){staging.width=0;staging.height=0;}
@@ -241,29 +246,78 @@
       const provided=raw!==undefined&&raw!==""?Number(raw):NaN;
       return clamp(Number.isFinite(provided)?provided:scaled,0,1);
     }
+    function diagnosticSnapshot(){
+      const currentTargets=targets().length;
+      return Object.freeze({...metrics,currentTargets,
+        stale:dirty||metrics.lastTargets!==currentTargets,
+        estimatedGpuRGBABytes:4*(metrics.canvasPixels+metrics.texturePixels),
+        suspended:suspended||document.hidden||!sceneVisible});
+    }
+    function finishMeasurements(){
+      if(!pendingMeasurements.length)return;
+      const snapshot=diagnosticSnapshot();
+      for(const resolve of pendingMeasurements.splice(0))resolve(snapshot);
+    }
+    function layoutWallpaper(root,viewportH){
+      // Image cover scale is frozen against content height changes.
+      // Orientation/viewport-width changes may reset the reference height.
+      if(!wallpaperReferenceHeight||Math.abs(root.width-wallpaperReferenceWidth)>1){
+        wallpaperReferenceWidth=root.width;
+        wallpaperReferenceHeight=Math.max(1,Math.min(root.height,viewportH));
+        wallpaperTileWidth=0;
+      }
+      if(wallpaperTileWidth>0&&wallpaperTileHeight>0)return;
+      const srcW=source.naturalWidth||source.width;
+      const srcH=source.naturalHeight||source.height;
+      if(!srcW||!srcH)throw new Error("Missing background dimensions");
+      const fit=Math.max(root.width/srcW,wallpaperReferenceHeight/srcH);
+      wallpaperTileWidth=srcW*fit;
+      wallpaperTileHeight=srcH*fit;
+      backdrop.style.backgroundSize=wallpaperTileWidth+"px "+wallpaperTileHeight+"px";
+      backdrop.style.backgroundPosition="center top";
+      backdrop.style.backgroundRepeat="repeat-y";
+      metrics.wallpaperTileWidth=wallpaperTileWidth;
+      metrics.wallpaperTileHeight=wallpaperTileHeight;
+    }
     function draw(){
       raf=0;
-      if(disposed||!ready||!textureReady||document.hidden||suspended||!sceneVisible)return;
+      if(disposed||!ready||!textureReady||document.hidden||suspended||!sceneVisible){
+        finishMeasurements();return;
+      }
       const root=scene.getBoundingClientRect();
-      if(root.width<=0||root.height<=0)return;
+      if(root.width<=0||root.height<=0){finishMeasurements();return;}
       try{
-        // Bound both total pixels and the device's largest renderbuffer.
-        // Long scenes trade resolution for bounded GPU memory, not crashes.
+        const viewportH=Math.max(1,Number(global.visualViewport?.height)||
+          Number(global.innerHeight)||root.height);
+        const viewportOffset=Math.max(0,Number(global.visualViewport?.offsetTop)||0);
+        const overscan=96;
+        // Bounded viewport strip regardless of full scene height.
+        const canvasCssH=Math.min(root.height,viewportH+overscan*2);
+        const idealStart=viewportOffset-root.top-overscan;
+        const viewStart=clamp(idealStart,0,Math.max(0,root.height-canvasCssH));
+        canvas.style.top=viewStart+"px";
+        canvas.style.left="0px";
+        canvas.style.bottom="auto";
+        canvas.style.width=root.width+"px";
+        canvas.style.height=canvasCssH+"px";
         const maxRenderbuffer=Number(gl.getParameter(gl.MAX_RENDERBUFFER_SIZE))||4096;
         const budget=Math.max(1,Number(settings.pixelBudget)||defaults.pixelBudget);
         const scale=Math.min(
           Math.max(0.1,Number(settings.dprCap)||defaults.dprCap),
           (devicePixelRatio||1)*(global.visualViewport?.scale||1),
-          Math.sqrt(budget/Math.max(1,root.width*root.height)),
-          maxRenderbuffer/root.width,maxRenderbuffer/root.height
+          Math.sqrt(budget/Math.max(1,root.width*canvasCssH)),
+          maxRenderbuffer/root.width,maxRenderbuffer/canvasCssH
         );
         const nextW=Math.max(1,Math.floor(root.width*scale));
-        const nextH=Math.max(1,Math.floor(root.height*scale));
+        const nextH=Math.max(1,Math.floor(canvasCssH*scale));
         if(nextW!==canvasW||nextH!==canvasH){
           canvasW=nextW;canvasH=nextH;canvas.width=canvasW;canvas.height=canvasH;
         }
         metrics.canvasPixels=canvasW*canvasH;
-        scaleX=canvasW/root.width;scaleY=canvasH/root.height;
+        metrics.canvasCssHeight=canvasCssH;
+        metrics.viewportTop=viewStart;
+        scaleX=canvasW/root.width;scaleY=canvasH/canvasCssH;
+        layoutWallpaper(root,viewportH);
         gl.viewport(0,0,canvasW,canvasH);
         gl.clearColor(0,0,0,0);gl.clear(gl.COLOR_BUFFER_BIT);
         gl.disable(gl.DEPTH_TEST);gl.disable(gl.BLEND);
@@ -274,10 +328,11 @@
         gl.activeTexture(gl.TEXTURE0);gl.bindTexture(gl.TEXTURE_2D,texture);
         gl.uniform1i(handles.bg,0);
         gl.uniform2f(handles.res,canvasW,canvasH);
-        const sourceAspect=textureWidth/textureHeight,rootAspect=root.width/root.height;
-        let sx=1,sy=1,ox=0,oy=0;
-        if(sourceAspect>rootAspect){sx=rootAspect/sourceAspect;ox=(1-sx)*.5;}
-        else{sy=sourceAspect/rootAspect;oy=(1-sy)*.5;}
+        // Center-top CSS wallpaper tile and scene-anchored UV agree.
+        const sx=root.width/wallpaperTileWidth;
+        const sy=canvasCssH/wallpaperTileHeight;
+        const ox=(wallpaperTileWidth-root.width)/(2*wallpaperTileWidth);
+        const oy=1-(viewStart+canvasCssH)/wallpaperTileHeight-0.00001;
         gl.uniform2f(handles.bgScale,sx,sy);
         gl.uniform2f(handles.bgOffset,ox,oy);
         gl.uniform1f(handles.borderWidth,Math.min(scaleX,scaleY));
@@ -288,15 +343,18 @@
         // hundreds of widgets. Draw only those intersecting the viewport.
         const vw=Number(global.innerWidth),vh=Number(global.innerHeight);
         const hasViewport=Number.isFinite(vw)&&vw>0&&Number.isFinite(vh)&&vh>0;
+        const stripTop=root.top+viewStart;
+        const stripBottom=stripTop+canvasCssH;
         for(const el of all){
           const b=el.getBoundingClientRect();
           if(b.width<=0||b.height<=0||
              b.right<=root.left||b.left>=root.right||
              b.bottom<=root.top||b.top>=root.bottom||
+             b.bottom<=stripTop||b.top>=stripBottom||
              (hasViewport&&(b.right<=0||b.left>=vw||b.bottom<=0||b.top>=vh))){
             culled++;continue;
           }
-          const left=(b.left-root.left)*scaleX,top=(b.top-root.top)*scaleY;
+          const left=(b.left-root.left)*scaleX,top=(b.top-stripTop)*scaleY;
           const width=b.width*scaleX,height=b.height*scaleY;
           const x0=clamp(Math.floor(left)-2,0,canvasW);
           const y0=clamp(Math.floor(canvasH-top-height)-2,0,canvasH);
