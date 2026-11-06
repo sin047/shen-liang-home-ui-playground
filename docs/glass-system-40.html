@@ -1,0 +1,177 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#e9eeed"><title>Glass System 4.0 · 家 ^ ^</title>
+<style>
+:root{--ink:#465257;--muted:#7e8b8e;--refract:.36;--thickness:.96;--glint:.42;--frost:.08}*{box-sizing:border-box}html,body{margin:0;min-height:100%;font-family:-apple-system,BlinkMacSystemFont,"PingFang SC",sans-serif;color:var(--ink)}body{background:#e9eeed;padding:calc(env(safe-area-inset-top) + 22px) 16px calc(env(safe-area-inset-bottom) + 30px)}main{width:min(100%,760px);margin:auto}.top{display:flex;justify-content:space-between;color:#829094;font-size:11px;letter-spacing:.14em;margin-bottom:26px}.top a{color:inherit;text-decoration:none;letter-spacing:0}h1{font:400 clamp(38px,8vw,56px) Georgia;margin:0 0 8px}h1 small{font:11px -apple-system,sans-serif;letter-spacing:.1em;color:#849195}.intro{font-size:13px;line-height:1.8;color:#78868a;margin:0 0 20px}.toolbar{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:14px}.upload{border:1px solid #ffffffde;border-radius:999px;background:#ffffffad;padding:12px 17px;font-size:13px;color:#657277}.upload input{display:none}.filename{font-size:12px;color:#859195}.stage{position:relative;isolation:isolate;overflow:hidden;border-radius:30px;height:min(76vh,760px);min-height:590px;background:#cad8d6;box-shadow:0 22px 60px #485b5b18}.backdrop{position:absolute;inset:0;z-index:-2;background:linear-gradient(135deg,#dfe9e6,#b8ccca 48%,#e7e4dc);background-size:cover;background-position:center}#optics{position:absolute;inset:0;width:100%;height:100%;z-index:0;pointer-events:none}.identity{position:absolute;z-index:2;top:26px;left:24px;display:flex;align-items:center;gap:13px}.avatar{width:54px;height:54px;border-radius:50%;display:grid;place-items:center;font:italic 30px Georgia;color:#73858a;background:linear-gradient(145deg,#ffffffb8,#ffffff30);border:1px solid #ffffff70}.who{font:italic 29px Georgia;color:#526167}.status{font-size:12px;color:#738287;margin-top:3px}.messages{position:absolute;inset:112px 20px 42px;z-index:1;display:flex;flex-direction:column;justify-content:center;gap:30px;pointer-events:none}.message{max-width:84%;width:fit-content;padding:13px 17px;border:1px solid transparent;border-radius:25px;background:transparent;box-shadow:0 7px 18px rgba(20,30,39,.085),0 2px 4px rgba(20,30,39,.035);color:#465257;font-size:15px;line-height:1.7;}.message.right{align-self:flex-end}.message.long{max-width:94%}.stage.css-fallback .message{border-color:rgba(255,255,255,.64);background:rgba(255,255,255,.16);box-shadow:inset 0 1px rgba(255,255,255,.18),0 5px 18px rgba(70,90,90,.06);-webkit-backdrop-filter:blur(12px) saturate(1.04);backdrop-filter:blur(12px) saturate(1.04)}.caption{position:absolute;z-index:2;bottom:18px;left:20px;color:#687b7f9c;font-size:10px;letter-spacing:.14em} .controls{margin-top:17px;padding:18px;border:1px solid #ffffffc9;border-radius:22px;background:#ffffff73;backdrop-filter:blur(18px)}.head{display:flex;justify-content:space-between;margin-bottom:16px;font-size:13px;color:#667579}.head strong{font-weight:500}.presets{display:flex;align-items:center;gap:8px;margin:-2px 0 16px}.preset{appearance:none;border:1px solid rgba(104,128,135,.25);color:#596b70;border-radius:999px;padding:9px 16px;background:#ffffff58;font:600 11px -apple-system,BlinkMacSystemFont,sans-serif;letter-spacing:.08em;cursor:pointer;touch-action:manipulation}.preset[aria-pressed=true]{background:#566c73;color:#fff;border-color:#566c73}.preset:focus-visible{outline:2px solid #517d84;outline-offset:2px}.sample-note{font-size:11px;color:#8a9698;margin-left:auto}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px 18px}.control label{display:flex;justify-content:space-between;font-size:11px;color:#7a888b;margin-bottom:8px}.control output{font-variant-numeric:tabular-nums}input[type=range]{width:100%;accent-color:#829c9b}.notes{font-size:11px;color:#859195;line-height:1.7;margin:13px 2px 0}@media(min-width:600px){.grid{grid-template-columns:repeat(4,minmax(0,1fr))}}@media(max-width:480px){.stage{height:660px}.messages{inset:112px 16px 42px;gap:25px}.message{font-size:14px;padding:12px 15px}}
+</style></head><body><main><div class="top"><span>SHEN & LIANG · MATERIAL RESEARCH</span><a href="glass-system-30.html">与 3.0 对照 ↗</a></div><h1>Glass System <small>4.0 / FULL-SURFACE OPTICS</small></h1><p class="intro">独立光学试验：整块玻璃都参与折射，亮度自适应边缘与轻微体积层次共同形成清透质感。保留原来的聊天排版与本地背景，不覆盖 3.0。</p><div class="toolbar"><label class="upload">从相册选择背景图片<input id="imageFile" type="file" accept="image/*"></label><span class="filename" id="filename">当前：默认柔和渐变</span></div><section class="stage" id="stage"><div class="backdrop" id="backdrop"></div><canvas id="optics"></canvas><div class="identity"><div class="avatar">S</div><div><div class="who">Shin</div><div class="status">online · 在家</div></div></div><div class="messages" id="messages"><div class="message" data-glass>嗯，过来坐。</div><div class="message right long" data-glass>今天先不急着做什么，歇一会儿。<br>你想说话，我就在这里听。</div><div class="message right" data-glass>今天的光线真好。</div><div class="message" data-glass>慢慢说，我在听。</div></div><div class="caption">FULL-SURFACE LENS · ONE SHARED WEBGL CONTEXT</div></section><section class="controls"><div class="head"><span>光学参数 · LIVE</span><strong id="status">初始化中</strong></div><div class="presets" aria-label="材质预设">
+<button type="button" class="preset" data-preset="clear" aria-pressed="true">CLEAR · 透明</button>
+<button type="button" class="preset" data-preset="smoked" aria-pressed="false">SMOKED · 烟灰</button>
+<span class="sample-note">仅改变材质 · 不改变布局</span>
+</div>
+<div class="grid">
+<div class="control"><label for="refract">折射强度 <output id="refractOut">0.46</output></label><input id="refract" type="range" min="0" max="100" value="46"></div>
+<div class="control"><label for="thickness">内侧厚度 <output id="thicknessOut">0.58</output></label><input id="thickness" type="range" min="0" max="100" value="58"></div>
+<div class="control"><label for="glint">方向高光 <output id="glintOut">0.38</output></label><input id="glint" type="range" min="0" max="100" value="38"></div>
+<div class="control"><label for="wobble">表面波动 <output id="wobbleOut">0.16</output></label><input id="wobble" type="range" min="0" max="100" value="16"></div>
+</div><p class="notes">4.0 是独立材质试验：全表面圆角透镜场、亮度自适应明暗与 CLEAR / SMOKED 预设。没有外部图片请求；本地照片仅在当前浏览器中读取。可随时返回 3.0 对照。</p></section></main>
+<script>(()=>{const stage=document.getElementById('stage'),canvas=document.getElementById('optics'),backdrop=document.getElementById('backdrop'),status=document.getElementById('status');const gl=canvas.getContext('webgl',{alpha:true,antialias:true,premultipliedAlpha:false});let source=null,texture=null,program=null,buffer=null,raf=0,resizeRaf=0,dpr=1,scaleX=1,scaleY=1,aaMode='fallback AA',activeBackgroundUrl=null,textureWidth=0,textureHeight=0,textureReady=false,backgroundRequest=0,material='clear';function defaultSource(){
+  const c=document.createElement('canvas');c.width=1200;c.height=900;
+  const ctx=c.getContext('2d');
+  const sky=ctx.createLinearGradient(70,0,1000,950);
+  sky.addColorStop(0,'#d5d9db');sky.addColorStop(.46,'#c2cdd0');sky.addColorStop(1,'#ece0d8');
+  ctx.fillStyle=sky;ctx.fillRect(0,0,1200,900);
+  const glow=ctx.createRadialGradient(950,180,25,840,290,780);
+  glow.addColorStop(0,'rgba(255,251,242,.75)');glow.addColorStop(1,'rgba(255,251,242,0)');
+  ctx.fillStyle=glow;ctx.fillRect(0,0,1200,900);
+  // Architecture-like forms keep long contours visible under full-surface refraction.
+  for(let i=0;i<7;i++){
+    const x=105+i*170;const w=112;const high=280+((i*43)%115);
+    ctx.fillStyle=i%2===0?'rgba(81,105,112,.10)':'rgba(81,105,112,.07)';
+    ctx.fillRect(x,900-high,w,high);
+    ctx.strokeStyle='rgba(65,83,90,.23)';ctx.lineWidth=6;
+    ctx.beginPath();ctx.moveTo(x+8,900);ctx.lineTo(x+8,900-high+65);
+    ctx.quadraticCurveTo(x+56,900-high-20,x+w-8,900-high+65);
+    ctx.lineTo(x+w-8,900);ctx.stroke();
+    ctx.strokeStyle='rgba(247,247,239,.35)';ctx.lineWidth=2;
+    for(let j=0;j<4;j++){ctx.beginPath();ctx.moveTo(x+15,900-high+90+j*46);ctx.lineTo(x+w-15,900-high+90+j*46);ctx.stroke()}
+  }
+  ctx.lineCap='round';
+  for(let stem=0;stem<5;stem++){
+    const originX=stem%2===0?-70:1250, originY=150+stem*145;
+    ctx.strokeStyle=stem%2===0?'rgba(66,79,84,.34)':'rgba(88,89,86,.29)';
+    ctx.lineWidth=10-stem;
+    ctx.beginPath();ctx.moveTo(originX,originY);
+    ctx.bezierCurveTo(originX+(stem%2===0?210:-250),originY-70,650,originY+130,890+(stem%2===0?0:-500),originY+260);
+    ctx.stroke();
+    for(let leaf=0;leaf<7;leaf++){
+      const lx=(stem%2===0?180:980)+leaf*65*(stem%2===0?1:-1);
+      const ly=originY-30+Math.sin(leaf*1.4+stem)*80;
+      ctx.fillStyle=leaf%3===0?'rgba(224,175,173,.49)':'rgba(247,221,213,.57)';
+      ctx.beginPath();ctx.ellipse(lx,ly,8+leaf%3,16,leaf*.33,0,Math.PI*2);ctx.fill();
+    }
+  }
+  return c;
+}
+source=defaultSource();try{backdrop.style.backgroundImage='url("'+source.toDataURL('image/jpeg',0.86)+'")'}catch(error){console.warn('背景预览生成失败',error)}const vs='attribute vec2 p;varying vec2 uv;void main(){uv=p*.5+.5;gl_Position=vec4(p,0.,1.);}';const fs="precision highp float;\nvarying vec2 uv;\nuniform sampler2D bg;\nuniform vec2 res;\nuniform vec4 rect;\nuniform float radius;\nuniform float borderWidth;\nuniform float power;\nuniform float thick;\nuniform float shine;\nuniform float wobble;\nuniform float mode;\nuniform vec2 bgScale;\nuniform vec2 bgOffset;\n\nfloat roundBox(vec2 point, vec2 halfSize, float corner) {\n  vec2 q=abs(point)-(halfSize-vec2(corner));\n  return length(max(q,vec2(0.0)))+min(max(q.x,q.y),0.0)-corner;\n}\n\nfloat boundaryAlongRay(vec2 direction, vec2 halfSize, float corner) {\n  vec2 dir=abs(direction);\n  vec2 flat=max(halfSize-vec2(corner),vec2(0.0));\n  float straight=min(halfSize.x/max(dir.x,0.0001),halfSize.y/max(dir.y,0.0001));\n  vec2 intersection=dir*straight;\n  if(intersection.x<=flat.x||intersection.y<=flat.y) return max(straight,0.001);\n  float projected=dot(dir,flat);\n  float discriminant=max(0.0,projected*projected-dot(flat,flat)+corner*corner);\n  return max(projected+sqrt(discriminant),0.001);\n}\n\nvoid main() {\n  vec2 framebuffer=vec2(uv.x*res.x,(1.0-uv.y)*res.y);\n  vec2 halfSize=rect.zw*0.5;\n  vec2 relative=framebuffer-(rect.xy+halfSize);\n  float d=roundBox(relative,halfSize,radius);\n  float aa=1.0;\n  float coverage=1.0-smoothstep(-aa,aa,d);\n  if(coverage<=0.0) discard;\n\n  vec2 direction=normalize(relative+vec2(0.00001));\n  float ray=boundaryAlongRay(direction,halfSize,radius);\n  vec2 normalized=relative/ray;\n  float radial=clamp(length(normalized),0.0,1.0);\n  float dome=pow(max(1.0-radial*radial,0.0),0.78);\n  float rim=pow(radial,4.5);\n  float opticalProfile=0.78*dome-0.25*rim;\n\n  vec2 distortion=normalized*opticalProfile*(74.0*power);\n  vec2 softFlow=vec2(\n    sin(normalized.y*4.4+normalized.x*1.7+0.3),\n    cos(normalized.x*4.0-normalized.y*2.1-0.5)\n  );\n  distortion+=softFlow*(2.0*wobble)*(0.18+0.82*dome);\n  vec2 viewportShift=vec2(distortion.x/res.x,-distortion.y/res.y);\n  vec2 sampleUV=bgOffset+(uv+viewportShift)*bgScale;\n  sampleUV=clamp(sampleUV,bgOffset+vec2(0.0002),bgOffset+bgScale-vec2(0.0002));\n  vec3 col=texture2D(bg,sampleUV).rgb;\n\n  float inside=max(-d,0.0)/max(borderWidth,0.0001);\n  float innerBevel=exp(-inside/(2.8+3.5*thick));\n  float rimHair=exp(-inside/0.95);\n  float luma=dot(col,vec3(0.2126,0.7152,0.0722));\n  float bright=smoothstep(0.37,0.85,luma);\n\n  float e=1.4;\n  vec2 gradient=vec2(\n    roundBox(relative+vec2(e,0.0),halfSize,radius)-roundBox(relative-vec2(e,0.0),halfSize,radius),\n    roundBox(relative+vec2(0.0,e),halfSize,radius)-roundBox(relative-vec2(0.0,e),halfSize,radius)\n  );\n  vec2 normal=normalize(gradient+vec2(0.00001));\n  float key=pow(max(dot(normal,normalize(vec2(-0.62,-0.78))),0.0),3.2);\n  float fill=pow(max(dot(normal,normalize(vec2(0.83,0.55))),0.0),4.1);\n\n  float adaptiveShade=innerBevel*(0.027+0.077*bright)*(0.48+0.52*max(dot(normal,vec2(0.50,0.87)),0.0));\n  float smokeShade=mode*innerBevel*(0.11+0.06*bright);\n  col*=1.0-adaptiveShade-smokeShade;\n\n  float directional=(key*0.87+fill*0.23);\n  float availableHeadroom=1.0-smoothstep(0.40,0.94,luma);\n  float glint=innerBevel*directional*shine*(0.10+0.29*availableHeadroom);\n  col=mix(col,vec3(1.0),clamp(glint,0.0,0.40));\n\n  vec3 rimContrast=mix(vec3(0.94,0.97,0.98),vec3(0.16,0.21,0.25),bright);\n  col=mix(col,rimContrast,rimHair*(0.09+0.045*thick));\n  if(mode>0.5) {\n    col=mix(col,col*vec3(0.67,0.70,0.74)+vec3(0.035,0.038,0.045),0.24);\n  }\n  gl_FragColor=vec4(clamp(col,0.0,1.0),coverage);\n}";function shader(t,s){const q=gl.createShader(t);gl.shaderSource(q,s);gl.compileShader(q);if(!gl.getShaderParameter(q,gl.COMPILE_STATUS))throw Error(gl.getShaderInfoLog(q));return q}let ok=false;
+function initRenderer(){
+  try{
+    if(!gl)throw new Error('WebGL 不可用');
+    const derivativeSupport=!!gl.getExtension('OES_standard_derivatives');
+    aaMode=derivativeSupport?'fwidth AA':'fallback AA';
+    const fragmentSource=derivativeSupport
+      ? '#extension GL_OES_standard_derivatives : enable'+String.fromCharCode(10)+fs.replace(
+          'float aa=1.0;float coverage=1.-smoothstep(-aa,aa,d);',
+          'float aa=max(fwidth(d),0.75);float coverage=1.-smoothstep(-aa,aa,d);'
+        )
+      : fs;
+    program=gl.createProgram();
+    if(!program)throw new Error('无法创建 WebGL Program');
+    const vertexShader=shader(gl.VERTEX_SHADER,vs);
+    const fragmentShader=shader(gl.FRAGMENT_SHADER,fragmentSource);
+    gl.attachShader(program,vertexShader);
+    gl.attachShader(program,fragmentShader);
+    gl.linkProgram(program);
+    gl.deleteShader(vertexShader);
+    gl.deleteShader(fragmentShader);
+    if(!gl.getProgramParameter(program,gl.LINK_STATUS))throw new Error(gl.getProgramInfoLog(program));
+    buffer=gl.createBuffer();
+    if(!buffer)throw new Error('无法创建顶点缓冲区');
+    gl.bindBuffer(gl.ARRAY_BUFFER,buffer);
+    gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([-1,-1,1,-1,-1,1,1,1]),gl.STATIC_DRAW);
+    texture=gl.createTexture();
+    if(!texture)throw new Error('无法创建背景纹理');
+    gl.activeTexture(gl.TEXTURE0);
+    gl.bindTexture(gl.TEXTURE_2D,texture);
+    gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.LINEAR);
+    gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MAG_FILTER,gl.LINEAR);
+    gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_S,gl.CLAMP_TO_EDGE);
+    gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_T,gl.CLAMP_TO_EDGE);
+    ok=true;
+    stage.classList.remove('css-fallback');
+    canvas.style.display='block';
+    status.textContent='共享 WebGL 引擎运行中';
+  }catch(e){
+    ok=false;
+    stage.classList.add('css-fallback');
+    canvas.style.display='none';
+    status.textContent='WebGL 不可用 · CSS fallback';
+    console.error(e);
+  }
+}
+initRenderer();
+function upload(){if(!ok||!texture)return false;const sw=source.naturalWidth||source.videoWidth||source.width,sh=source.naturalHeight||source.videoHeight||source.height;if(!sw||!sh)throw new Error('背景图片尺寸无效');const maxTextureSize=gl.getParameter(gl.MAX_TEXTURE_SIZE)||4096,maxPixels=5000000,scale=Math.min(1,maxTextureSize/sw,maxTextureSize/sh,Math.sqrt(maxPixels/(sw*sh))),tw=Math.max(1,Math.floor(sw*scale)),th=Math.max(1,Math.floor(sh*scale));let uploadSource=source,staging=null;textureReady=false;try{if(tw!==sw||th!==sh){staging=document.createElement('canvas');staging.width=tw;staging.height=th;const ctx=staging.getContext('2d');if(!ctx)throw new Error('无法创建背景缩放画布');ctx.drawImage(source,0,0,tw,th);uploadSource=staging}gl.activeTexture(gl.TEXTURE0);gl.bindTexture(gl.TEXTURE_2D,texture);gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL,1);gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,gl.RGBA,gl.UNSIGNED_BYTE,uploadSource);const uploadError=gl.getError();if(uploadError!==gl.NO_ERROR)throw new Error('背景纹理上传失败：WebGL '+uploadError);textureWidth=tw;textureHeight=th;textureReady=true;return true}finally{gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL,0);if(staging){staging.width=0;staging.height=0}}}function resize(){
+  const r=stage.getBoundingClientRect();
+  const zoom=window.visualViewport?.scale||1;
+  dpr=Math.min(4,(devicePixelRatio||1)*zoom,Math.sqrt(5000000/Math.max(1,r.width*r.height)));
+  canvas.width=Math.max(1,Math.round(r.width*dpr));
+  canvas.height=Math.max(1,Math.round(r.height*dpr));
+  scaleX=canvas.width/Math.max(1,r.width);
+  scaleY=canvas.height/Math.max(1,r.height);
+  if(ok){
+    try{
+      gl.viewport(0,0,canvas.width,canvas.height);
+      if(!textureReady)upload();
+      const attrs=gl.getContextAttributes();
+      status.textContent='WebGL · DPR '+dpr.toFixed(2)+' · '+aaMode+' · MSAA '+(attrs&&attrs.antialias?'on':'off');
+    }catch(error){
+      console.error(error);
+      ok=false;
+      stage.classList.add('css-fallback');
+      canvas.style.display='none';
+      status.textContent='背景更新失败 · CSS fallback';
+    }
+  }
+  draw();
+}
+function scheduleResize(){if(resizeRaf)return;resizeRaf=requestAnimationFrame(()=>{resizeRaf=0;resize()})}
+function v(id){return Number(document.getElementById(id).value)/100}function draw(){
+  if(!ok||!textureReady)return;
+  cancelAnimationFrame(raf);
+  raf=requestAnimationFrame(()=>{
+    if(!ok)return;
+    try{
+      const r=stage.getBoundingClientRect();
+      gl.viewport(0,0,canvas.width,canvas.height);
+      gl.clearColor(0,0,0,0);
+      gl.clear(gl.COLOR_BUFFER_BIT);
+      gl.useProgram(program);
+      gl.bindBuffer(gl.ARRAY_BUFFER,buffer);
+      const p=gl.getAttribLocation(program,'p');
+      gl.enableVertexAttribArray(p);
+      gl.vertexAttribPointer(p,2,gl.FLOAT,false,0,0);
+      gl.activeTexture(gl.TEXTURE0);
+      gl.bindTexture(gl.TEXTURE_2D,texture);
+      gl.uniform1i(gl.getUniformLocation(program,'bg'),0);
+      gl.uniform2f(gl.getUniformLocation(program,'res'),canvas.width,canvas.height);
+      const sourceAspect=textureWidth/textureHeight,stageAspect=r.width/Math.max(1,r.height);let bgScaleX=1,bgScaleY=1,bgOffsetX=0,bgOffsetY=0;if(sourceAspect>stageAspect){bgScaleX=stageAspect/sourceAspect;bgOffsetX=(1-bgScaleX)*.5}else{bgScaleY=sourceAspect/stageAspect;bgOffsetY=(1-bgScaleY)*.5}gl.uniform2f(gl.getUniformLocation(program,'bgScale'),bgScaleX,bgScaleY);gl.uniform2f(gl.getUniformLocation(program,'bgOffset'),bgOffsetX,bgOffsetY);
+      gl.uniform1f(gl.getUniformLocation(program,'borderWidth'),Math.min(scaleX,scaleY));
+      gl.uniform1f(gl.getUniformLocation(program,'power'),v('refract'));
+      gl.uniform1f(gl.getUniformLocation(program,'thick'),v('thickness')*1.5);
+      gl.uniform1f(gl.getUniformLocation(program,'shine'),v('glint'));
+      gl.uniform1f(gl.getUniformLocation(program,'wobble'),v('wobble'));
+      gl.uniform1f(gl.getUniformLocation(program,'mode'),material==='smoked'?1:0);
+      gl.enable(gl.SCISSOR_TEST);
+      document.querySelectorAll('[data-glass]').forEach(el=>{
+        const b=el.getBoundingClientRect();
+        gl.uniform4f(gl.getUniformLocation(program,'rect'),(b.left-r.left)*scaleX,(b.top-r.top)*scaleY,b.width*scaleX,b.height*scaleY);
+        gl.uniform1f(gl.getUniformLocation(program,'radius'),Math.max(0,Math.min(25*scaleX,25*scaleY,b.height*scaleY*.5)));
+        const x0=Math.max(0,Math.floor((b.left-r.left)*scaleX)-2);
+        const y0=Math.max(0,Math.floor(canvas.height-(b.bottom-r.top)*scaleY)-2);
+        const x1=Math.min(canvas.width,Math.ceil((b.right-r.left)*scaleX)+2);
+        const y1=Math.min(canvas.height,Math.ceil(canvas.height-(b.top-r.top)*scaleY)+2);
+        if(x1>x0&&y1>y0){
+          gl.scissor(x0,y0,x1-x0,y1-y0);
+          gl.drawArrays(gl.TRIANGLE_STRIP,0,4);
+        }
+      });
+      gl.disable(gl.SCISSOR_TEST);
+    }catch(error){
+      gl.disable(gl.SCISSOR_TEST);
+      console.error(error);
+      ok=false;
+      cancelAnimationFrame(raf);
+      stage.classList.add('css-fallback');
+      canvas.style.display='none';
+      status.textContent='渲染中断 · CSS fallback';
+    }
+  });
+}
+document.querySelectorAll('[data-preset]').forEach(button=>button.addEventListener('click',()=>{material=button.dataset.preset;document.querySelectorAll('[data-preset]').forEach(b=>b.setAttribute('aria-pressed',String(b===button)));draw()}));['refract','thickness','glint','wobble'].forEach(id=>document.getElementById(id).addEventListener('input',e=>{const n=Number(e.target.value)/100;document.getElementById(id+'Out').textContent=n.toFixed(2);draw()}));if('ResizeObserver' in window){new ResizeObserver(scheduleResize).observe(stage);new ResizeObserver(draw).observe(document.getElementById('messages'))}addEventListener('resize',scheduleResize,{passive:true});addEventListener('scroll',draw,{passive:true});if(window.visualViewport){visualViewport.addEventListener('resize',scheduleResize,{passive:true});visualViewport.addEventListener('scroll',draw,{passive:true})}document.getElementById('imageFile').addEventListener('change',e=>{const f=e.target.files&&e.target.files[0];if(!f)return;const request=++backgroundRequest,url=URL.createObjectURL(f),img=new Image();img.onload=()=>{if(request!==backgroundRequest){URL.revokeObjectURL(url);return}const previousUrl=activeBackgroundUrl;source=img;activeBackgroundUrl=url;backdrop.style.backgroundImage='url('+url+')';document.getElementById('filename').textContent='当前：'+f.name;e.target.value='';try{if(ok)upload();scheduleResize();if(previousUrl)URL.revokeObjectURL(previousUrl)}catch(error){console.error(error);ok=false;stage.classList.add('css-fallback');canvas.style.display='none';status.textContent='背景纹理上传失败 · CSS fallback';if(previousUrl)URL.revokeObjectURL(previousUrl)}};img.onerror=()=>{URL.revokeObjectURL(url);if(request===backgroundRequest){e.target.value='';status.textContent='图片读取失败'}};img.src=url});document.addEventListener('visibilitychange',()=>{if(document.hidden){cancelAnimationFrame(raf);cancelAnimationFrame(resizeRaf);resizeRaf=0}else scheduleResize()});canvas.addEventListener('webglcontextlost',e=>{e.preventDefault();ok=false;texture=program=buffer=null;textureReady=false;textureWidth=textureHeight=0;cancelAnimationFrame(raf);stage.classList.add('css-fallback');canvas.style.display='none';status.textContent='WebGL 暂停 · CSS fallback'});canvas.addEventListener('webglcontextrestored',()=>{texture=program=buffer=null;textureReady=false;textureWidth=textureHeight=0;initRenderer();if(ok){try{upload();scheduleResize()}catch(error){console.error(error);ok=false;stage.classList.add('css-fallback');canvas.style.display='none';status.textContent='纹理恢复失败 · CSS fallback'}}});function disposeRenderer(){if(gl&&!gl.isContextLost()){if(texture)gl.deleteTexture(texture);if(buffer)gl.deleteBuffer(buffer);if(program)gl.deleteProgram(program)}texture=program=buffer=null;textureReady=false;textureWidth=textureHeight=0;canvas.width=1;canvas.height=1}addEventListener('pagehide',e=>{if(!e.persisted){backgroundRequest++;cancelAnimationFrame(raf);cancelAnimationFrame(resizeRaf);resizeRaf=0;disposeRenderer();if(activeBackgroundUrl){URL.revokeObjectURL(activeBackgroundUrl);activeBackgroundUrl=null}}});if(ok)resize();else canvas.style.display='none'})();</script></body></html>
