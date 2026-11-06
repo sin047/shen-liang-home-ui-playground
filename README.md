@@ -2,6 +2,12 @@
 
 独立视觉实验场，与正式产品仓库分离。
 
+## Glass Material Kit 0.2 · 自适应组件材质（待验收）
+
+基于用户已在 iPhone Safari 验证的 Kit 0.1，新建独立可对照页面：`docs/glass-kit-v02.html`，使用 `docs/glass-material-kit-v02.js`。新增 compact/control/panel/neutral 组件尺寸适配、显式属性优先级及背景图片竞态保护，并加入模拟 WebGL 生命周期回归测试。可在页面内切换适配模式，对比不同尺寸组件的折射与局部受光。
+
+**稳定的 Kit 0.1 页面、Shader、CSS 原样保留；正式产品仓库暂不修改。** 测试与接入边界：`docs/GLASS_MATERIAL_KIT_02.md`。
+
 ## Glass Material Kit 0.1 · 4.2.3（跨组件实验）
 
 **最终方向不是专用聊天气泡，而是一套通用液态玻璃材质模板。** 这一版独立抽出 `docs/glass-material-kit.js`、`docs/glass-material-kit.css`，统一驱动 DOM 上的 `data-glass` 按钮、卡片、导航、原生输入框、状态标签和聊天气泡。一个场景共享 WebGL Context / 背景纹理，可分别设置圆角、CLEAR/SMOKED、折射及光照参数；文字和交互仍由业务 DOM 保留。
