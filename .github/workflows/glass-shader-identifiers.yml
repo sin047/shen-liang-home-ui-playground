@@ -5,6 +5,9 @@ on:
     paths:
       - 'docs/glass-system-4*.html'
       - 'docs/glass-material-kit.js'
+      - 'docs/glass-material-kit-v02.js'
+      - 'docs/glass-kit-v02.html'
+      - 'tools/check-glass-kit-v02.cjs'
       - 'docs/glass-material-kit.css'
       - 'docs/glass-kit.html'
       - 'tools/check-glass-kit.cjs'
@@ -15,6 +18,9 @@ on:
     paths:
       - 'docs/glass-system-4*.html'
       - 'docs/glass-material-kit.js'
+      - 'docs/glass-material-kit-v02.js'
+      - 'docs/glass-kit-v02.html'
+      - 'tools/check-glass-kit-v02.cjs'
       - 'docs/glass-material-kit.css'
       - 'docs/glass-kit.html'
       - 'tools/check-glass-kit.cjs'
@@ -34,4 +40,6 @@ jobs:
       - name: Check reusable Glass Material Kit API and demo
         run: |
           node --check docs/glass-material-kit.js
+          node --check docs/glass-material-kit-v02.js
           node tools/check-glass-kit.cjs
+          node tools/check-glass-kit-v02.cjs
