@@ -162,7 +162,6 @@ assert.equal(canvas.removed,undefined);
   assert.equal(await accepted,true);
   assert.ok(background.style.backgroundImage.includes("blob:local-2"));
   assert.ok(!revoked.includes("blob:local-2"),"Active background URL must stay alive");
-  assert.rejects?null:null; // asynchronous negative cases tested below
   const previous=canvas.handlers.webglcontextlost;
   assert.equal(typeof previous,"function");
   let prevented=false;
