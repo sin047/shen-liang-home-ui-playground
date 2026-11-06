@@ -401,11 +401,11 @@
     global.visualViewport?.addEventListener("scroll",schedule,{passive:true});
     document.addEventListener("visibilitychange",onVisibility);
     if("ResizeObserver" in global){
-      observer=new ResizeObserver(schedule);
+      observer=new global.ResizeObserver(schedule);
       observer.observe(scene);watchTargets();
     }
     if("MutationObserver" in global){
-      mutationObserver=new MutationObserver(()=>{watchTargets();schedule();});
+      mutationObserver=new global.MutationObserver(()=>{watchTargets();schedule();});
       mutationObserver.observe(scene,{childList:true,subtree:true,
         attributes:true,attributeFilter:["data-glass","data-glass-profile",
           "data-glass-radius","data-glass-refraction","data-glass-thickness",
@@ -413,7 +413,7 @@
           "class","style"]});
     }
     if("IntersectionObserver" in global){
-      sceneObserver=new IntersectionObserver(entries=>{
+      sceneObserver=new global.IntersectionObserver(entries=>{
         const entry=entries[0];
         if(!entry)return;
         sceneVisible=entry.isIntersecting;
