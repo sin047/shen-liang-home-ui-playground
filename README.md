@@ -2,6 +2,14 @@
 
 独立视觉实验场，与正式产品仓库分离。
 
+## Glass Material Kit 0.1 · 4.2.3（跨组件实验）
+
+**最终方向不是专用聊天气泡，而是一套通用液态玻璃材质模板。** 这一版独立抽出 `docs/glass-material-kit.js`、`docs/glass-material-kit.css`，统一驱动 DOM 上的 `data-glass` 按钮、卡片、导航、原生输入框、状态标签和聊天气泡。一个场景共享 WebGL Context / 背景纹理，可分别设置圆角、CLEAR/SMOKED、折射及光照参数；文字和交互仍由业务 DOM 保留。
+
+手机演示：`docs/glass-kit.html`。接入方法、复用边界、源项目授权说明与实机验证计划：`docs/GLASS_MATERIAL_KIT.md`。
+
+**这是未验收的独立 Playground 研究版本，不改变现有 4.2.2 页面、正式 UI 或原有产品设计。**
+
 ## Glass System 4.2.2 — Continuous Optics（待验收实验）
 
 独立页面：`docs/glass-system-422.html`。基于 4.2.1 清透玻璃，将容易出现局部水波的肩部折射改为在边界归零的连续单峰透镜，并增加局部曲面反光而不增加整圈白边。保留相册背景、GPU 状态、原图对照和圆角形状；**4.2.1 与所有旧版均完整保留，正式 UI 不变。**
