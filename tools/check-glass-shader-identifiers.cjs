@@ -62,15 +62,16 @@ for (const filename of pages) {
     filename, "OES_standard_derivatives");
 }
 // The reusable kit keeps its fragment shader in an external JavaScript asset.
-const kitFile = "docs/glass-material-kit.js";
-const kit = fs.readFileSync(kitFile, "utf8");
-const source = kit.match(/const FRAGMENT_SHADER = ("(?:\\.|[^"\\])*");/);
-if (!source) throw Error(kitFile + ": external fragment shader not found");
-const externalFragment = JSON.parse(source[1]);
-checkIdentifiers(externalFragment, kitFile, "base");
-const replacement = kit.match(/FRAGMENT_SHADER\.replace\("float aa=1\.0;","([^"]+)"\)/);
-if (!replacement) throw Error(kitFile + ": derivative substitution not found");
-checkIdentifiers(externalFragment.replace("float aa=1.0;", replacement[1]),
-  kitFile, "OES_standard_derivatives");
+for(const kitFile of ["docs/glass-material-kit.js","docs/glass-material-kit-v02.js"]){
+  const kit = fs.readFileSync(kitFile, "utf8");
+  const source = kit.match(/const FRAGMENT_SHADER = ("(?:\\.|[^"\\])*");/);
+  if (!source) throw Error(kitFile + ": external fragment shader not found");
+  const externalFragment = JSON.parse(source[1]);
+  checkIdentifiers(externalFragment, kitFile, "base");
+  const replacement = kit.match(/FRAGMENT_SHADER\.replace\("float aa=1\.0;","([^"]+)"\)/);
+  if (!replacement) throw Error(kitFile + ": derivative substitution not found");
+  checkIdentifiers(externalFragment.replace("float aa=1.0;", replacement[1]),
+    kitFile, "OES_standard_derivatives");
+}
 
-console.log("PASS: all inline and shared-kit fragment shader declarations");
+console.log("PASS: inline and Kit 0.1/0.2 GLSL declarations");
