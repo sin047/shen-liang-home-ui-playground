@@ -7,7 +7,8 @@ const fs = require("node:fs");
 const pages = [
   "docs/glass-system-41.html",
   "docs/glass-system-42.html",
-  "docs/glass-system-421.html"
+  "docs/glass-system-421.html",
+  "docs/glass-system-422.html"
 ];
 
 const known = new Set((
@@ -60,4 +61,4 @@ for (const filename of pages) {
   checkIdentifiers(shader.replace("float aa=1.0;", injection[1]),
     filename, "OES_standard_derivatives");
 }
-console.log("PASS: 4.1/4.2/4.2.1 fragment shader identifiers and derivative-AA substitutions");
+console.log("PASS: 4.1/4.2/4.2.1/4.2.2 fragment shader identifiers and derivative-AA substitutions");
