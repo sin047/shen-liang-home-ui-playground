@@ -2,6 +2,12 @@
 
 独立视觉实验场，与正式产品仓库分离。
 
+## Glass System 4.2 — Optical Volume（未验收实验）
+
+新页面：`docs/glass-system-42.html`，在 4.1 的清透基础上独立试验更有层次的透镜曲率、局部曲面反光与柔和的内侧厚度。保留照片上传、原图对照和 GPU 状态提示，可随时返回 4.1 比较。**这版尚未经过 iPhone Safari 视觉验收，不能视为最终外观。**
+
+技术设计与测试清单：`docs/GLASS_SYSTEM_42_OPTICAL_VOLUME.md`。旧版 4.1、4.0、3.0 全部保留；正式产品仓库不变。
+
 ## Glass System 4.1 — CLEAR Lens & Light（未验收实验）
 
 独立页面：`docs/glass-system-41.html`，在 4.0 的基础上重新调整全表面折射、局部高光与自适应内侧明暗。页面右下角直接显示 WebGL / CSS fallback 状态，并提供「原图对照」来核对实际透镜效果，避免把 CSS 兼容样式误认为玻璃渲染。
