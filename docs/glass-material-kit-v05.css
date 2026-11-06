@@ -1,0 +1,11 @@
+/* Shared browser-composited wallpaper for Glass Material Kit 0.5.
+   Must be outside the scrollable scene and behind all native UI. */
+.glass-kit-viewport-wallpaper{
+  position:fixed;
+  inset:0;
+  z-index:0;
+  pointer-events:none;
+  background-size:cover;
+  background-position:center center;
+  background-repeat:no-repeat;
+}
