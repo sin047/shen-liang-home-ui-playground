@@ -4,12 +4,20 @@ on:
   pull_request:
     paths:
       - 'docs/glass-system-4*.html'
+      - 'docs/glass-material-kit.js'
+      - 'docs/glass-material-kit.css'
+      - 'docs/glass-kit.html'
+      - 'tools/check-glass-kit.cjs'
       - 'tools/check-glass-shader-identifiers.cjs'
       - '.github/workflows/glass-shader-identifiers.yml'
   push:
     branches: [main]
     paths:
       - 'docs/glass-system-4*.html'
+      - 'docs/glass-material-kit.js'
+      - 'docs/glass-material-kit.css'
+      - 'docs/glass-kit.html'
+      - 'tools/check-glass-kit.cjs'
       - 'tools/check-glass-shader-identifiers.cjs'
       - '.github/workflows/glass-shader-identifiers.yml'
 
@@ -23,3 +31,7 @@ jobs:
       - uses: actions/checkout@v4
       - name: Check GLSL declarations and derivative AA source variants
         run: node tools/check-glass-shader-identifiers.cjs
+      - name: Check reusable Glass Material Kit API and demo
+        run: |
+          node --check docs/glass-material-kit.js
+          node tools/check-glass-kit.cjs
