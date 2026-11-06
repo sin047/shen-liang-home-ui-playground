@@ -159,8 +159,10 @@
     }
     function setSource(image,cssUrl){
       if(disposed)throw new Error("GlassKit instance already destroyed");
+      const obsolete=activeUrl&&cssUrl!==activeUrl?activeUrl:null;
       source=image;
       if(typeof cssUrl==="string")backdrop.style.backgroundImage="url("+JSON.stringify(cssUrl)+")";
+      if(obsolete){URL.revokeObjectURL(obsolete);activeUrl=null;}
       try{
         if(ready)textureUpload();
         schedule();
